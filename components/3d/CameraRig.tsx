@@ -5,29 +5,33 @@ import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
 interface CameraRigProps {
-  scrollProgress: number;
+  scrollProgressRef: React.MutableRefObject<number>;
+  isMobile?: boolean;
 }
 
-export default function CameraRig({ scrollProgress }: CameraRigProps) {
+export default function CameraRig({ scrollProgressRef, isMobile = false }: CameraRigProps) {
   const { camera } = useThree();
-  const currentPos = useRef(new THREE.Vector3(0, 0, 7));
+  const currentPos    = useRef(new THREE.Vector3(0, 0, 7));
   const currentTarget = useRef(new THREE.Vector3(0, 0, 0));
+
+  // Pre-allocated scratch vectors — NO allocation in the hot path
+  const _targetPos    = useRef(new THREE.Vector3());
+  const _targetLookAt = useRef(new THREE.Vector3());
 
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime;
-    const p = scrollProgress;
+    const p = scrollProgressRef.current;
 
-    // Target camera position: follow Icarus upward + slight orbit
-    const targetX = Math.sin(t * 0.12) * 0.8;
-    const targetY = p * 6.5 + Math.sin(t * 0.08) * 0.3;
-    const targetZ = 7 - p * 1.5; // zoom in slightly as ascending
+    _targetPos.current.set(
+      Math.sin(t * 0.12) * (isMobile ? 0.42 : 0.8),
+      p * (isMobile ? 5.6 : 6.5) + Math.sin(t * 0.08) * (isMobile ? 0.18 : 0.3),
+      (isMobile ? 8 : 7) - p * (isMobile ? 1.0 : 1.5),
+    );
+    _targetLookAt.current.set(0, p * 6.0, 0);
 
-    const lookAtY = p * 6.0;
-
-    // Smooth lerp toward target
     const lerpF = Math.min(delta * 2.5, 1);
-    currentPos.current.lerp(new THREE.Vector3(targetX, targetY, targetZ), lerpF);
-    currentTarget.current.lerp(new THREE.Vector3(0, lookAtY, 0), lerpF);
+    currentPos.current.lerp(_targetPos.current, lerpF);
+    currentTarget.current.lerp(_targetLookAt.current, lerpF);
 
     camera.position.copy(currentPos.current);
     camera.lookAt(currentTarget.current);

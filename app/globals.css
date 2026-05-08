@@ -28,21 +28,21 @@
 
 /* ─── LIGHT THEME ─── */
 [data-theme="light"] {
-  --gold-primary:   #B8860B;
-  --gold-bright:    #D4AF37;
-  --gold-pale:      #8B6914;
-  --obsidian:       #FAF7F0;
-  --deep-space:     #F4EFE4;
-  --mist-dark:      #EDE6D6;
-  --glass-bg:       rgba(255, 252, 243, 0.75);
-  --glass-border:   rgba(180, 130, 10, 0.22);
-  --body-bg:        #FAF7F0;
-  --body-color:     #1a1208;
-  --text-muted:     rgba(26, 18, 8, 0.60);
-  --text-faint:     rgba(26, 18, 8, 0.35);
-  --section-glow:   rgba(180, 130, 10, 0.08);
-  --nav-bg:         rgba(250, 247, 240, 0.90);
-  --scrollbar-bg:   #FAF7F0;
+  --gold-primary:   #9F7416;
+  --gold-bright:    #D0A642;
+  --gold-pale:      #70500B;
+  --obsidian:       #F7F3EA;
+  --deep-space:     #EFE7D9;
+  --mist-dark:      #E3D8C4;
+  --glass-bg:       rgba(255, 252, 246, 0.86);
+  --glass-border:   rgba(118, 82, 16, 0.26);
+  --body-bg:        #F7F3EA;
+  --body-color:     #21170D;
+  --text-muted:     rgba(33, 23, 13, 0.70);
+  --text-faint:     rgba(33, 23, 13, 0.45);
+  --section-glow:   rgba(159, 116, 22, 0.11);
+  --nav-bg:         rgba(255, 252, 246, 0.92);
+  --scrollbar-bg:   #F7F3EA;
 }
 
 * {
@@ -85,7 +85,8 @@ body {
     -webkit-backdrop-filter: blur(12px) saturate(140%);
     border: 1px solid var(--glass-border);
     border-radius: 2px;
-    transition: background 0.4s ease, border-color 0.4s ease;
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.18);
+    transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
   }
 
   .gold-text {
@@ -147,34 +148,40 @@ body {
     background: linear-gradient(90deg, rgba(212,175,55,0.4), transparent);
   }
 
-  /* Light mode text overrides */
-  [data-theme="light"] .text-white\/80 { color: rgba(26, 18, 8, 0.80) !important; }
-  [data-theme="light"] .text-white\/70 { color: rgba(26, 18, 8, 0.70) !important; }
-  [data-theme="light"] .text-white\/60 { color: rgba(26, 18, 8, 0.60) !important; }
-  [data-theme="light"] .text-white\/55 { color: rgba(26, 18, 8, 0.55) !important; }
-  [data-theme="light"] .text-white\/50 { color: rgba(26, 18, 8, 0.50) !important; }
-  [data-theme="light"] .text-white\/45 { color: rgba(26, 18, 8, 0.45) !important; }
-  [data-theme="light"] .text-white\/40 { color: rgba(26, 18, 8, 0.40) !important; }
-  [data-theme="light"] .text-white\/35 { color: rgba(26, 18, 8, 0.35) !important; }
-  [data-theme="light"] .text-white\/30 { color: rgba(26, 18, 8, 0.30) !important; }
-  [data-theme="light"] .text-white\/25 { color: rgba(26, 18, 8, 0.25) !important; }
-  [data-theme="light"] .text-white\/20 { color: rgba(26, 18, 8, 0.20) !important; }
-  [data-theme="light"] .text-white\/15 { color: rgba(26, 18, 8, 0.15) !important; }
-  [data-theme="light"] .text-white { color: rgba(26, 18, 8, 0.95) !important; }
+  /* Light mode text overrides
+     Dark theme: white at X% on #0c0c1a → needs mirrored dark text at higher %
+     on #F7F3EA to achieve equivalent perceived contrast.
+     Rule of thumb: add ~30-35pp to each opacity value. */
+  [data-theme="light"] .text-white\/80 { color: rgba(26, 18, 8, 0.92) !important; }
+  [data-theme="light"] .text-white\/70 { color: rgba(26, 18, 8, 0.88) !important; }
+  [data-theme="light"] .text-white\/60 { color: rgba(26, 18, 8, 0.84) !important; }
+  [data-theme="light"] .text-white\/55 { color: rgba(26, 18, 8, 0.80) !important; }
+  [data-theme="light"] .text-white\/50 { color: rgba(26, 18, 8, 0.76) !important; }
+  [data-theme="light"] .text-white\/45 { color: rgba(26, 18, 8, 0.72) !important; }
+  [data-theme="light"] .text-white\/40 { color: rgba(26, 18, 8, 0.68) !important; }
+  [data-theme="light"] .text-white\/35 { color: rgba(26, 18, 8, 0.63) !important; }
+  [data-theme="light"] .text-white\/30 { color: rgba(26, 18, 8, 0.58) !important; }
+  [data-theme="light"] .text-white\/25 { color: rgba(26, 18, 8, 0.52) !important; }
+  [data-theme="light"] .text-white\/20 { color: rgba(26, 18, 8, 0.46) !important; }
+  [data-theme="light"] .text-white\/15 { color: rgba(26, 18, 8, 0.40) !important; }
+  [data-theme="light"] .text-white { color: rgba(26, 18, 8, 0.96) !important; }
   [data-theme="light"] .gold-shimmer-text {
-    background: linear-gradient(90deg, #5C4500 0%, #B8860B 25%, #D4AF37 50%, #8B6914 75%, #5C4500 100%);
+    background: linear-gradient(90deg, #5F4210 0%, #9F7416 25%, #C79935 50%, #70500B 75%, #49300A 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   [data-theme="light"] .gold-text {
-    background: linear-gradient(135deg, #8B6914 0%, #B8860B 40%, #6B4F00 60%, #8B6914 100%);
+    background: linear-gradient(135deg, #6D4B0D 0%, #A77A18 42%, #3E2A08 68%, #8A6413 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   [data-theme="light"] .bg-obsidian-500 { background: #FAF7F0 !important; }
+  [data-theme="light"] .glass-panel {
+    box-shadow: 0 20px 60px rgba(56, 39, 16, 0.12);
+  }
 }
 
 @keyframes shimmerText {
@@ -291,10 +298,18 @@ body {
   * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
 
-/* ─── Fix hero-to-content gap ─── */
+/* ─── Hero-to-content: eliminate blank gap ─── */
 #hero + * {
   position: relative;
   z-index: 2;
+  /* Pull the next section up to sit flush with the hero */
+  margin-top: 0;
+}
+
+/* Remove any default section top-padding that creates the gap */
+#hero + section,
+#hero + div > section:first-child {
+  padding-top: 0;
 }
 
 /* Section backgrounds to prevent black gaps */
@@ -397,4 +412,111 @@ section {
     transform: translateY(0);
     filter: blur(0);
   }
+}
+
+.hero-fast-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(212, 175, 55, 0.13), transparent 24rem),
+    radial-gradient(circle at 50% 58%, rgba(56, 42, 110, 0.18), transparent 26rem),
+    linear-gradient(180deg, var(--body-bg), var(--body-bg));
+}
+
+.hero-fast-sigil {
+  position: relative;
+  z-index: 2;
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2.8rem, 16vw, 8rem);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  color: transparent;
+  background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(255,248,220,0.5), rgba(212,175,55,0.08));
+  -webkit-background-clip: text;
+  background-clip: text;
+  opacity: 0.4;
+  transform: translateX(0.08em);
+}
+
+.hero-fast-ring {
+  position: absolute;
+  border: 1px solid rgba(212, 175, 55, 0.16);
+  border-radius: 50%;
+  box-shadow: 0 0 45px rgba(212, 175, 55, 0.08);
+}
+
+.hero-fast-ring-outer {
+  width: min(72vw, 520px);
+  aspect-ratio: 1;
+  animation: slowSpin 18s linear infinite;
+}
+
+.hero-fast-ring-inner {
+  width: min(46vw, 320px);
+  aspect-ratio: 1;
+  border-color: rgba(212, 175, 55, 0.1);
+  animation: slowSpin 12s linear infinite reverse;
+}
+
+.hero-fast-wing {
+  position: absolute;
+  width: min(32vw, 230px);
+  height: 1px;
+  top: 50%;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.34), transparent);
+  filter: blur(0.2px);
+  opacity: 0.56;
+}
+
+.hero-fast-wing-left {
+  transform: translateX(-42%) rotate(-18deg);
+}
+
+.hero-fast-wing-right {
+  transform: translateX(42%) rotate(18deg);
+}
+
+.premium-team-card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.025), transparent 36%),
+    var(--glass-bg);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 248, 220, 0.06);
+}
+
+.premium-team-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid rgba(212, 175, 55, 0.12);
+}
+
+[data-theme="light"] .hero-fast-backdrop {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(159, 116, 22, 0.16), transparent 24rem),
+    radial-gradient(circle at 50% 58%, rgba(80, 65, 120, 0.08), transparent 26rem),
+    linear-gradient(180deg, var(--body-bg), var(--body-bg));
+}
+
+[data-theme="light"] .hero-fast-sigil {
+  background: linear-gradient(135deg, rgba(112,80,11,0.13), rgba(159,116,22,0.48), rgba(62,42,8,0.13));
+  -webkit-background-clip: text;
+  background-clip: text;
+  opacity: 0.34;
+}
+
+[data-theme="light"] .premium-team-card {
+  box-shadow:
+    0 24px 80px rgba(56, 39, 16, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+@keyframes slowSpin {
+  to { transform: rotate(360deg); }
 }

@@ -8,11 +8,12 @@ const IcarusScene = dynamic(() => import('../3d/IcarusScene'), {
 });
 
 export default function Hero() {
-  const [scrollProgress, setScrollProgress] = useState(0);
+  // ── KEY PERF FIX: use a ref, NOT state, so scroll events
+  //    never trigger React re-renders on every tick ──────────
+  const scrollProgressRef = useRef(0);
   const [isMobile, setIsMobile] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
 
-  // Detect mobile
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
@@ -20,40 +21,45 @@ export default function Hero() {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // Track scroll progress for this section
+  // Update ref on scroll — zero React re-renders
   useEffect(() => {
     const handle = () => {
       if (!heroRef.current) return;
-      const rect   = heroRef.current.getBoundingClientRect();
-      const total  = heroRef.current.offsetHeight - window.innerHeight;
+      const rect    = heroRef.current.getBoundingClientRect();
+      const total   = heroRef.current.offsetHeight - window.innerHeight;
       const scrolled = -rect.top;
-      const prog   = Math.max(0, Math.min(1, scrolled / (total || 1)));
-      setScrollProgress(prog);
+      scrollProgressRef.current = Math.max(0, Math.min(1, scrolled / (total || 1)));
     };
     window.addEventListener('scroll', handle, { passive: true });
     return () => window.removeEventListener('scroll', handle);
   }, []);
 
+  // Framer-motion scroll for text (motion values = no re-render)
   const { scrollYProgress } = useScroll({ target: heroRef });
-  const textOpacity  = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
-  const textY        = useTransform(scrollYProgress, [0, 0.4], [0, -60]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.35], [1, 0]);
+  const textY       = useTransform(scrollYProgress, [0, 0.35], [0, -60]);
 
   return (
     <section
       id="hero"
       ref={heroRef}
       className="relative"
-      // Shorter on mobile to reduce black space
-      style={{ height: isMobile ? '200vh' : '280vh' }}
+      style={{ height: isMobile ? '170vh' : '190vh' }}
     >
-      {/* Sticky 3D canvas */}
       <div className="sticky top-0 w-full h-screen overflow-hidden">
-        {/* Full-bleed 3D scene */}
-        <div className="absolute inset-0">
-          <IcarusScene scrollProgress={scrollProgress} isMobile={isMobile} />
+        <div className="hero-fast-backdrop" aria-hidden="true">
+          <div className="hero-fast-sigil">ICARUS</div>
+          <div className="hero-fast-ring hero-fast-ring-outer" />
+          <div className="hero-fast-ring hero-fast-ring-inner" />
+          <div className="hero-fast-wing hero-fast-wing-left" />
+          <div className="hero-fast-wing hero-fast-wing-right" />
         </div>
 
-        {/* Cinematic intro vignette */}
+        {/* 3D scene — receives stable ref, never causes re-renders */}
+        <div className="absolute inset-0 z-10">
+          <IcarusScene scrollProgressRef={scrollProgressRef} isMobile={isMobile} />
+        </div>
+
         <motion.div
           className="absolute inset-0 pointer-events-none z-10"
           style={{ background: 'var(--body-bg)' }}
@@ -62,12 +68,10 @@ export default function Hero() {
           transition={{ delay: 0.2, duration: 1.8, ease: 'easeInOut' }}
         />
 
-        {/* Hero text content */}
         <motion.div
           className="absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none px-4"
           style={{ opacity: textOpacity, y: textY }}
         >
-          {/* Eyebrow */}
           <motion.p
             className="font-mono text-[10px] sm:text-xs tracking-[0.5em] sm:tracking-[0.7em] text-gold-500/70 uppercase mb-4 sm:mb-6 text-center"
             initial={{ opacity: 0, y: 20 }}
@@ -77,7 +81,6 @@ export default function Hero() {
             Est. — the art of argument
           </motion.p>
 
-          {/* Main title */}
           <motion.h1
             className="font-cinzel text-center leading-none mb-3 sm:mb-4"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -92,7 +95,6 @@ export default function Hero() {
             </span>
           </motion.h1>
 
-          {/* Tagline */}
           <motion.p
             className="font-cormorant text-base sm:text-lg md:text-2xl text-white/40 italic tracking-wide mt-4 sm:mt-6 px-6 text-center max-w-sm sm:max-w-lg"
             initial={{ opacity: 0, y: 20 }}
@@ -102,7 +104,6 @@ export default function Hero() {
             Dare to fly where logic becomes legend.
           </motion.p>
 
-          {/* Scroll cue */}
           <motion.div
             className="absolute bottom-8 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
             initial={{ opacity: 0 }}
@@ -120,15 +121,11 @@ export default function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* Bottom fade — blends into next section */}
         <div
           className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none z-20"
-          style={{
-            background: 'linear-gradient(to top, var(--body-bg) 0%, transparent 100%)',
-          }}
+          style={{ background: 'linear-gradient(to top, var(--body-bg) 0%, transparent 100%)' }}
         />
 
-        {/* Letterbox bars */}
         <motion.div
           className="absolute top-0 left-0 right-0 h-10 pointer-events-none z-30"
           style={{ background: 'var(--body-bg)', transformOrigin: 'top' }}

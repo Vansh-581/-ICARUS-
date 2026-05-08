@@ -135,17 +135,17 @@ export default function Team() {
       id="team"
       ref={sectionRef}
       // Mobile: tall enough to scroll through all 4 cards
-      className="relative py-32 lg:py-32"
+      className="relative py-20 sm:py-24 lg:py-32"
       style={{ minHeight: 'auto' }}
     >
       {/* Mobile section needs extra height for pin scroll */}
       <style>{`
         @media (max-width: 1023px) {
-          #team { min-height: calc(${TEAM.length * 100}vh + 380px); }
+          #team { min-height: calc(${TEAM.length * 92}vh + 280px); }
         }
       `}</style>
 
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-12">
+      <div className="relative max-w-7xl mx-auto px-5 sm:px-6 lg:px-12">
         <SectionTitle
           eyebrow="The Guides"
           title="Our Team"
@@ -153,25 +153,26 @@ export default function Team() {
         />
 
         {/* ── Sticky wrapper (mobile pins here) ── */}
-        <div ref={stickyRef} className="mt-20">
+        <div ref={stickyRef} className="mt-8 sm:mt-12 lg:mt-20">
 
           {/* ─── MOBILE CARD STACK ─── */}
-          <div className="relative lg:hidden h-[440px] min-[390px]:h-[420px]">
+          <div className="relative lg:hidden h-[404px] min-[390px]:h-[392px]">
             {TEAM.map((member, i) => (
               <div
                 key={member.name}
                 ref={(el) => { if (el) mobileCardsRef.current[i] = el; }}
-                className="glass-panel team-stack-card overflow-hidden w-full"
+                className="glass-panel team-stack-card premium-team-card overflow-hidden w-full"
               >
                 {/* Avatar */}
-                <div className={`relative h-40 bg-gradient-to-br ${member.accent} flex items-center justify-center`}>
+                <div className={`relative h-32 bg-gradient-to-br ${member.accent} flex items-center justify-center`}>
                   <div className="absolute inset-0"
-                    style={{ background: 'radial-gradient(ellipse at center, rgba(212,175,55,0.12) 0%, transparent 70%)' }}
+                    style={{ background: 'radial-gradient(ellipse at center, rgba(212,175,55,0.18) 0%, transparent 70%)' }}
                   />
-                  <span className="font-cinzel text-6xl font-bold gold-text opacity-40 relative z-10">
+                  <span className="font-cinzel text-5xl font-bold gold-text opacity-55 relative z-10">
                     {member.initials}
                   </span>
                   <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-400/50 to-transparent" />
+                  <div className="absolute bottom-0 left-5 right-5 h-px bg-gradient-to-r from-transparent via-gold-400/25 to-transparent" />
 
                   {/* Card number */}
                   <span className="absolute bottom-3 right-4 font-mono text-xs text-gold-400/30">
@@ -180,19 +181,19 @@ export default function Team() {
                 </div>
 
                 {/* Content */}
-                <div className="p-6">
-                  <h3 className="font-cinzel text-lg font-semibold text-white mb-1">
+                <div className="p-5">
+                  <h3 className="font-cinzel text-[17px] font-semibold text-white mb-1 tracking-wide">
                     {member.name}
                   </h3>
-                  <p className="font-mono text-xs tracking-widest text-gold-500/60 uppercase mb-3">
+                  <p className="font-mono text-[10px] tracking-[0.24em] text-gold-500/70 uppercase mb-3">
                     {member.role}
                   </p>
-                  <p className="font-cormorant text-base text-white/50 leading-relaxed mb-4">
+                  <p className="font-cormorant text-[15px] text-white/58 leading-relaxed mb-4">
                     {member.bio}
                   </p>
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-1.5 border-t border-gold-400/10 pt-3">
                     {member.credentials.map(c => (
-                      <span key={c} className="font-mono text-xs text-white/25 flex items-center gap-2">
+                      <span key={c} className="font-mono text-[10px] text-white/36 flex items-center gap-2">
                         <span className="text-gold-500/40">—</span> {c}
                       </span>
                     ))}
