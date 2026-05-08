@@ -5,7 +5,6 @@ import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-// Preload model at module level
 useGLTF.preload('/Icarus_model_3d.glb');
 
 interface IcarusCharacterProps {
@@ -60,9 +59,9 @@ export default function IcarusCharacter({
   scrollProgressRef,
   isMobile = false,
 }: IcarusCharacterProps) {
-  const { scene } = useGLTF('/Icarus_model_3d.glb');
-  const groupRef  = useRef<THREE.Group>(null);
-  const shaderRef = useRef<THREE.WebGLProgramParametersWithUniforms | null>(null);
+  const { scene }  = useGLTF('/Icarus_model_3d.glb');
+  const groupRef   = useRef<THREE.Group>(null);
+  const shaderRef  = useRef<THREE.WebGLProgramParametersWithUniforms | null>(null);
 
   const clonedScene = useMemo(() => {
     const clone = scene.clone(true);
@@ -94,9 +93,13 @@ export default function IcarusCharacter({
       mat.color             = new THREE.Color('#f5d062');
       mat.emissive          = new THREE.Color('#5c4200');
       mat.emissiveIntensity = 0.18;
-      child.material        = mat;
-      child.castShadow      = false;
-      child.receiveShadow   = false;
+
+      child.material    = mat;
+      child.castShadow  = false;
+      child.receiveShadow = false;
+
+      // Model is always in the frustum — skip the bounds check every frame
+      child.frustumCulled = false;
     });
 
     return clone;
@@ -104,7 +107,7 @@ export default function IcarusCharacter({
 
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime;
-    const p = scrollProgressRef.current; // read ref directly — no React dep
+    const p = scrollProgressRef.current;
 
     if (shaderRef.current) {
       shaderRef.current.uniforms.uTime.value   = t;

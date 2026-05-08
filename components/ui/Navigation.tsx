@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence, useScroll } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 
 const NAV_ITEMS = [
@@ -16,11 +16,18 @@ const NAV_ITEMS = [
 export default function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled,   setScrolled]   = useState(false);
-  const { scrollY } = useScroll();
 
+  // Only call setState when the threshold actually crosses — eliminates
+  // 60fps nav re-renders from framer-motion's scrollY.onChange
   useEffect(() => {
-    return scrollY.onChange(v => setScrolled(v > 80));
-  }, [scrollY]);
+    let cur = false;
+    const handle = () => {
+      const next = window.scrollY > 80;
+      if (next !== cur) { cur = next; setScrolled(next); }
+    };
+    window.addEventListener('scroll', handle, { passive: true });
+    return () => window.removeEventListener('scroll', handle);
+  }, []);
 
   // Close mobile menu on resize to desktop
   useEffect(() => {

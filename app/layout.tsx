@@ -16,13 +16,37 @@ export const viewport: Viewport = {
   themeColor: '#0c0c1a',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+/**
+ * Device-tier detection — runs as an inline script BEFORE React hydrates.
+ * Sets data-perf="low|mid|high" on <html> so CSS rules take effect on
+ * the very first paint with zero layout shift or flicker.
+ *
+ * Criteria:
+ *  low  → ≤2 GB RAM or ≤2 CPU cores  (old phones, budget laptops)
+ *  mid  → ≤4 GB RAM or ≤4 CPU cores
+ *  high → everything else
+ */
+const DEVICE_TIER_SCRIPT = `
+(function(){
+  try {
+    var mem   = navigator.deviceMemory;
+    var cores = navigator.hardwareConcurrency;
+    var tier  = 'high';
+    if      ((mem && mem   <= 2) || (cores && cores <= 2)) tier = 'low';
+    else if ((mem && mem   <= 4) || (cores && cores <= 4)) tier = 'mid';
+    document.documentElement.setAttribute('data-perf', tier);
+  } catch(e) {}
+})();
+`.trim();
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning data-theme="dark">
+    <html lang="en" suppressHydrationWarning data-theme="dark" data-perf="high">
+      <head>
+        {/* Runs synchronously before any paint — stamps the perf tier so
+            CSS rules (no backdrop-filter, no shimmer, etc.) apply instantly */}
+        <script dangerouslySetInnerHTML={{ __html: DEVICE_TIER_SCRIPT }} />
+      </head>
       <body className="grain-overlay">
         <ThemeProvider>
           {children}

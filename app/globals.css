@@ -520,3 +520,84 @@ section {
 @keyframes slowSpin {
   to { transform: rotate(360deg); }
 }
+
+
+/* ═══════════════════════════════════════════════════════
+   PERFORMANCE TIER OVERRIDES
+   Stamped on <html data-perf="low|mid|high"> by layout.tsx
+   before first paint — zero flicker, zero FOUC.
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── content-visibility: skip rendering off-screen sections ───
+   The browser won't layout, paint, or rasterize any section that
+   is far from the viewport. contain-intrinsic-size preserves the
+   correct scrollbar length. Zero UI change, massive CPU/GPU win. */
+section:not(#hero) {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 700px;
+}
+
+/* ─── Low-end: strip the expensive backdrop-filter blur ─────────
+   backdrop-filter: blur() forces a GPU compositing layer + a full
+   blur pass every repaint. On low-end hardware this alone can halve
+   available frame budget. Replace with a solid opaque background. */
+[data-perf="low"] .glass-panel {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(12, 10, 26, 0.96) !important;
+}
+
+[data-perf="low"][data-theme="light"] .glass-panel {
+  background: rgba(247, 243, 234, 0.97) !important;
+}
+
+/* ─── Low-end: kill continuous CSS animations ───────────────────
+   These animations force the browser to composite an extra layer
+   every frame even when nothing else on the page has changed. */
+[data-perf="low"] .gold-shimmer-text {
+  animation: none !important;
+  /* Freeze on a visible gradient position */
+  background-position: 50% center !important;
+}
+
+[data-perf="low"] .hero-fast-ring-outer,
+[data-perf="low"] .hero-fast-ring-inner {
+  animation: none !important;
+}
+
+/* ─── Low-end: remove grain overlay (SVG filter + fixed layer) ──
+   The grain overlay is a fixed-position layer with an SVG filter.
+   On low-end GPUs this stacks on top of everything and repaints
+   every scroll tick. */
+[data-perf="low"] body.grain-overlay::after {
+  display: none !important;
+}
+
+/* ─── Low-end: simplify nav glass on scroll ─────────────────────
+   When the nav transitions to glass-panel on scroll, skip blur. */
+[data-perf="low"] header .glass-panel {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ─── Mid-tier: reduce blur radius to 4px (from 12px) ───────────
+   Lower blur = smaller GPU kernel = cheaper compositing pass. */
+[data-perf="mid"] .glass-panel {
+  backdrop-filter: blur(4px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(4px) saturate(120%) !important;
+}
+
+/* ─── All tiers: compositor hints on elements that actually move ─
+   Only apply will-change on elements that are currently animating.
+   Too many will-change declarations waste GPU memory on layers that
+   sit offscreen. */
+.hero-fast-ring-outer,
+.hero-fast-ring-inner {
+  will-change: transform;
+}
+
+/* Canvas wrapper: promote to its own GPU layer once, stay there */
+#hero .sticky {
+  transform: translateZ(0);
+  will-change: contents;
+}

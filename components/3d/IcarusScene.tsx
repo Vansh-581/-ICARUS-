@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useEffect, useRef } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { PerformanceMonitor, AdaptiveDpr } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
@@ -10,9 +10,9 @@ import IcarusCharacter from './IcarusCharacter';
 import CameraRig from './CameraRig';
 import AtmosphereBackground from './AtmosphereBackground';
 import WingTrails from './WingTrails';
+import FPSLimiter from './FPSLimiter';
 
 interface IcarusSceneProps {
-  // Ref instead of number — component never re-renders on scroll
   scrollProgressRef: React.MutableRefObject<number>;
   isMobile?: boolean;
 }
@@ -21,21 +21,31 @@ export default function IcarusScene({
   scrollProgressRef,
   isMobile = false,
 }: IcarusSceneProps) {
-  const [dpr, setDpr] = useState(isMobile ? 0.55 : 1);
+  const [dpr, setDpr]           = useState(isMobile ? 0.55 : 1);
   const [perfTier, setPerfTier] = useState<'low' | 'mid' | 'high'>(isMobile ? 'low' : 'mid');
 
   useEffect(() => {
-    const nav = navigator as Navigator & { deviceMemory?: number };
-    if (nav.deviceMemory && nav.deviceMemory <= 2) {
+    // Read the tier already stamped on <html> by the inline script in layout.tsx
+    const htmlTier = document.documentElement.getAttribute('data-perf') as
+      'low' | 'mid' | 'high' | null;
+
+    if (htmlTier === 'low' || isMobile) {
       setPerfTier('low');
       setDpr(0.5);
-    } else if (isMobile) {
-      setPerfTier('low');
-      setDpr(0.55);
+    } else if (htmlTier === 'mid') {
+      setPerfTier('mid');
+      setDpr(0.8);
+    } else {
+      setPerfTier('high');
+      setDpr(1);
     }
   }, [isMobile]);
 
-  const isLow = perfTier === 'low';
+  const isLow  = perfTier === 'low';
+  const isMid  = perfTier === 'mid';
+
+  // FPS targets: low=30, mid=45, high=60
+  const targetFPS = isLow ? 30 : isMid ? 45 : 60;
 
   return (
     <Canvas
@@ -46,7 +56,9 @@ export default function IcarusScene({
         far: 100,
       }}
       dpr={[0.45, dpr]}
-      frameloop="always"
+      // ── KEY: "demand" means the GPU only draws when FPSLimiter
+      //    calls invalidate(). Zero wasted frames. ──────────────
+      frameloop="demand"
       gl={{
         antialias: false,
         alpha: true,
@@ -58,14 +70,17 @@ export default function IcarusScene({
       shadows={false}
       style={{ background: 'transparent' }}
     >
+      {/* Hard FPS cap — prevents GPU from running at 120-240fps */}
+      <FPSLimiter fps={targetFPS} />
+
       <PerformanceMonitor
         onDecline={() => {
-          setDpr(prev => Math.max(0.5, prev - 0.15));
+          setDpr(prev => Math.max(0.45, prev - 0.15));
           setPerfTier('low');
         }}
         onIncline={() => {
-          if (!isMobile) {
-            setDpr(prev => Math.min(1.5, prev + 0.1));
+          if (!isMobile && perfTier !== 'high') {
+            setDpr(prev => Math.min(1.2, prev + 0.1));
             setPerfTier(prev => prev === 'low' ? 'mid' : 'high');
           }
         }}
@@ -89,7 +104,7 @@ export default function IcarusScene({
         <CameraRig scrollProgressRef={scrollProgressRef} isMobile={isMobile} />
       </Suspense>
 
-      {/* Lighter post-processing on low-end */}
+      {/* Post-processing: disabled on low/mobile — not worth the extra render pass */}
       <EffectComposer multisampling={0} enabled={!isLow && !isMobile}>
         <Bloom
           intensity={0.6}
