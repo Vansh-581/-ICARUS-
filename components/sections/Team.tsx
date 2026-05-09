@@ -4,6 +4,38 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SectionTitle from '@/components/ui/SectionTitle';
 
+
+// Lazy photo — only loads the image when the card scrolls into view.
+// Falls back to initials when photoSrc is absent (safe to add photos later
+// without touching the rest of the code).
+function MemberPhoto({ src, name, initials, accentFrom, accentTo, size = 'md' }: {
+  src?: string; name: string; initials: string;
+  accentFrom: string; accentTo: string; size?: 'lg' | 'md';
+}) {
+  if (!src) {
+    // No photo yet — show the styled initials avatar
+    return null; // let the parent render its own avatar
+  }
+  // Photo exists — render with lazy loading + fade-in
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={name}
+        loading="lazy"
+        decoding="async"
+        className="w-full h-full object-cover object-top transition-opacity duration-500"
+        style={{ opacity: 1 }}
+        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+      />
+      {/* Gradient overlay so name text stays readable */}
+      <div className="absolute bottom-0 left-0 right-0 h-1/2"
+        style={{ background: 'linear-gradient(to top, rgba(8,6,22,0.9), transparent)' }} />
+    </div>
+  );
+}
+
 type TabId = 'founders' | 'team' | 'mentors';
 
 interface Member {
@@ -11,6 +43,7 @@ interface Member {
   bio: string; credentials: string[];
   accentFrom: string; accentTo: string;
   badge?: string;
+  photoSrc?: string; // add e.g. '/team/arjun-mehta.webp' when photo is ready
 }
 
 const FOUNDERS: Member[] = [

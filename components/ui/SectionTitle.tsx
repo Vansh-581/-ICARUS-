@@ -24,7 +24,7 @@ export default function SectionTitle({
       className={`flex flex-col gap-3 sm:gap-4 ${textAlign}`}
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
-      viewport={{ once: false, margin: '-80px' }}
+      viewport={{ once: false, margin: '-60px' }}
       transition={{ duration: 0.8 }}
     >
       {eyebrow && (

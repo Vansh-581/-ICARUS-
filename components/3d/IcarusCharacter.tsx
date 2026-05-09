@@ -129,7 +129,7 @@ export default function IcarusCharacter({
 
     // Rise with scroll, gentle sinusoidal hover
     groupRef.current.position.y =
-      (isMobile ? -0.25 : -0.55) + p * 8.2 + Math.sin(t * 0.58) * 0.05;
+      (isMobile ? -0.1 : -0.55) + p * 8.2 + Math.sin(t * 0.58) * 0.05;
 
     // Subtle yaw (side-to-side rotation)
     groupRef.current.rotation.y = p * 0.28 + Math.sin(t * 0.16) * 0.09;
@@ -139,11 +139,11 @@ export default function IcarusCharacter({
 
     // Subtle breath scale
     const breathe = 1 + Math.sin(t * 0.48) * 0.011;
-    groupRef.current.scale.setScalar(breathe * (isMobile ? 0.82 : 1));
+    groupRef.current.scale.setScalar(breathe * (isMobile ? 0.55 : 1));
   });
 
   return (
-    <group ref={groupRef} position={[0, isMobile ? -0.25 : -0.55, 0]}>
+    <group ref={groupRef} position={[0, isMobile ? -0.1 : -0.55, 0]}>
       <primitive object={clonedScene} scale={[2.8, 2.8, 2.8]} />
     </group>
   );

@@ -24,12 +24,27 @@ const PERF_SCRIPT = `(function(){try{
   document.documentElement.setAttribute('data-perf',t);
 }catch(e){}})();`.trim();
 
+
+// Service Worker registration — runs after page load so it never
+// blocks the critical rendering path
+const SW_SCRIPT = `
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker
+      .register('/sw.js', { scope: '/' })
+      .catch(function () { /* silent — SW is a progressive enhancement */ });
+  });
+}
+`.trim();
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning data-theme="dark" data-perf="high">
+    <html lang="en" suppressHydrationWarning data-theme="light" data-perf="high">
       <head>
         {/* Device-tier detection — must run before any paint */}
         <script dangerouslySetInnerHTML={{ __html: PERF_SCRIPT }} />
+        {/* Service Worker registration — after load, never blocks render */}
+        <script dangerouslySetInnerHTML={{ __html: SW_SCRIPT }} />
 
         {/* Preconnect to Google Fonts domains — tells the browser to open
             the TCP/TLS connection before it even sees the stylesheet link */}

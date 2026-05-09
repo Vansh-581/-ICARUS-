@@ -6,7 +6,7 @@ import SectionTitle from '@/components/ui/SectionTitle';
 
 function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0);
-  const ref   = useRef<HTMLSpanElement>(null);
+  const ref    = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
 
   useEffect(() => {
@@ -36,40 +36,36 @@ const AWARDS = [
 
 export default function Achievements() {
   return (
-    <section id="achievements" className="relative py-32 overflow-hidden">
+    <section id="achievements" className="relative py-24 sm:py-32 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0"
-          style={{ background: 'radial-gradient(ellipse at 60% 50%, rgba(212,175,55,0.04) 0%, transparent 65%)' }}
-        />
+          style={{ background: 'radial-gradient(ellipse at 60% 50%, rgba(212,175,55,0.04) 0%, transparent 65%)' }} />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-12">
+      <div className="relative max-w-7xl mx-auto px-5 sm:px-6 lg:px-12">
         <SectionTitle
           eyebrow="Our Record"
           title="Achievements"
           subtitle="Years of excellence, measured in minds changed and trophies won."
         />
 
-        {/* Big stats row */}
-        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        {/* Stats row */}
+        <div className="mt-16 sm:mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
           {[
-            { target: 847,  suffix: '+',  label: 'Students Trained'   },
-            { target: 94,   suffix: '%',  label: 'Tournament Win Rate' },
-            { target: 3,    suffix: '',   label: 'Int\'l Championships' },
-            { target: 12,   suffix: '',   label: 'Years of Excellence'  },
+            { target: 847, suffix: '+', label: 'Students Trained'    },
+            { target: 94,  suffix: '%', label: 'Tournament Win Rate'  },
+            { target: 3,   suffix: '',  label: "Int'l Championships"  },
+            { target: 12,  suffix: '',  label: 'Years of Excellence'  },
           ].map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              className="glass-panel p-8"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: i * 0.1 }}
+            <motion.div key={stat.label} className="glass-panel p-5 sm:p-8"
+              initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.7, delay: i * 0.1 }}
             >
-              <p className="font-cinzel text-4xl md:text-5xl font-bold gold-text">
+              <p className="font-cinzel text-3xl sm:text-4xl md:text-5xl font-bold gold-text">
                 <Counter target={stat.target} suffix={stat.suffix} />
               </p>
-              <p className="font-mono text-xs tracking-[0.3em] text-white/35 uppercase mt-2">
+              <p className="font-mono text-[9px] sm:text-xs tracking-[0.25em] sm:tracking-[0.3em] uppercase mt-2"
+                style={{ color: 'rgba(255,255,255,0.35)' }}>
                 {stat.label}
               </p>
             </motion.div>
@@ -77,45 +73,53 @@ export default function Achievements() {
         </div>
 
         {/* Awards timeline */}
-        <div className="mt-24">
-          <motion.p
-            className="font-mono text-xs tracking-[0.5em] text-gold-500/50 uppercase mb-10 text-center"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
+        <div className="mt-16 sm:mt-24">
+          <motion.p className="font-mono text-[13px] font-bold tracking-[0.5em] uppercase mb-8 sm:mb-10 text-center"
+            style={{ color: 'rgba(189, 158, 53, 0.5)' }}
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
           >
             ✦ Notable Accolades ✦
           </motion.p>
 
           <div className="relative">
-            {/* Vertical line */}
-            <div className="absolute left-[72px] top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-gold-400/20 to-transparent hidden md:block" />
+            {/* Vertical line — desktop only */}
+            <div className="absolute left-[72px] top-0 bottom-0 w-px hidden md:block"
+              style={{ background: 'linear-gradient(to bottom, transparent, rgba(212,175,55,0.2), transparent)' }} />
 
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4 sm:gap-6">
               {AWARDS.map((award, i) => (
-                <motion.div
-                  key={i}
-                  className="flex items-center gap-6 group"
-                  initial={{ opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                <motion.div key={i} className="flex items-center gap-3 sm:gap-6 group"
+                  initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: '-40px' }}
                   transition={{ duration: 0.6, delay: i * 0.08 }}
                 >
-                  {/* Year */}
-                  <span className="font-mono text-xs text-gold-500/50 w-16 shrink-0 text-right hidden md:block">
+                  {/* Year — desktop only */}
+                  <span className="font-mono text-xs w-16 shrink-0 text-right hidden md:block"
+                    style={{ color: 'rgba(212,175,55,0.5)' }}>
                     {award.year}
                   </span>
 
-                  {/* Dot */}
-                  <div className="hidden md:flex w-3 h-3 rounded-full border border-gold-400/40 shrink-0 group-hover:border-gold-300 group-hover:bg-gold-400/20 transition-all duration-300" />
+                  {/* Dot — desktop only */}
+                  <div className="hidden md:flex w-3 h-3 rounded-full border shrink-0 transition-all duration-300"
+                    style={{ borderColor: 'rgba(175, 146, 51, 0.4)' }} />
 
-                  {/* Title */}
-                  <div className="glass-panel flex-1 px-6 py-4 group-hover:border-gold-400/25 transition-all duration-300">
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="font-cormorant text-base md:text-lg text-white/70 group-hover:text-white/90 transition-colors">
+                  {/* Card */}
+                  <div className="glass-panel flex-1 min-w-0 px-4 sm:px-6 py-3 sm:py-4 transition-all duration-300">
+                    {/* 
+                      KEY FIX: flex-col on mobile (year above title stacked),
+                      flex-row on md+. Title has min-w-0 + break-words so it
+                      wraps instead of overflowing the flex container.
+                    */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4">
+                      <span className="font-cormorant text-sm sm:text-base md:text-lg leading-snug
+                        min-w-0 break-words transition-colors duration-300"
+                        style={{ color: 'rgba(255,255,255,0.7)', wordBreak: 'break-word' }}
+                      >
                         {award.title}
                       </span>
-                      <span className="font-mono text-xs text-gold-500/40 md:hidden shrink-0">
+                      {/* Year badge — always visible on mobile, hidden on md (shown left) */}
+                      <span className="font-mono text-[9px] sm:text-xs shrink-0 md:hidden"
+                        style={{ color: 'rgba(212,175,55,0.45)' }}>
                         {award.year}
                       </span>
                     </div>

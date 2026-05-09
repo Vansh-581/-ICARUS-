@@ -159,7 +159,7 @@ export default function Programs() {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="mt-10 font-cinzel text-xs tracking-[0.3em] uppercase px-8 py-4 bg-gold-400/10 border border-gold-400/40 text-gold-300 hover:bg-gold-400/20 hover:border-gold-300 transition-all duration-300"
+                  className="mt-10 font-cinzel text-xs tracking-[0.3em] uppercase px-8 py-4 bg-gold-400/10 border border-gold-400/40 text-gold-500 font-bold hover:bg-gold-400/20 hover:border-gold-300 transition-all duration-300"
                   onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   Apply for This Program

@@ -10,24 +10,22 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: 'dark',
+  theme: 'light',
   toggle: () => {},
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark');
+  const [theme, setTheme] = useState<Theme>('light');
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-    try {
-      const saved = localStorage.getItem('icarus-theme') as Theme | null;
-      if (saved === 'light' || saved === 'dark') {
-        setTheme(saved);
-        document.documentElement.setAttribute('data-theme', saved);
-      }
-    } catch {}
-  }, []);
+ useEffect(() => {
+  setMounted(true);
+
+  setTheme('light');
+  document.documentElement.setAttribute('data-theme', 'light');
+
+  localStorage.setItem('icarus-theme', 'light');
+}, []);
 
   const toggle = () => {
     setTheme(prev => {
@@ -41,7 +39,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // Don't render children until mounted to avoid hydration mismatch
   if (!mounted) {
     return (
-      <ThemeContext.Provider value={{ theme: 'dark', toggle }}>
+      <ThemeContext.Provider value={{ theme: 'light', toggle }}>
         {children}
       </ThemeContext.Provider>
     );

@@ -95,7 +95,7 @@ export default function Navigation() {
 
           <button
             onClick={() => handleAnchor('#contact')}
-            className="hidden lg:block font-cinzel text-xs tracking-[0.2em] px-4 py-2 border border-gold-400/50 text-gold-300 uppercase hover:bg-gold-400/10 hover:border-gold-300 transition-all duration-300 whitespace-nowrap"
+            className="hidden lg:block font-cinzel text-xs font-semibold tracking-[0.2em] px-4 py-2 border border-gold-400/100 text-gold-500 uppercase hover:bg-gold-400/10 hover:border-gold-300 transition-all duration-300 whitespace-nowrap"
           >
             Enrol Now
           </button>

@@ -69,8 +69,9 @@ export default function About() {
             </motion.p>
 
             <motion.p
-              className="font-cormorant text-base sm:text-lg leading-relaxed"
-              style={{ color: 'var(--text-faint)' }}
+              className="font-cormorant  text-base sm:text-lg leading-relaxed"
+              style={{ color: 'var(--text-muted)' }}
+              
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -120,7 +121,7 @@ export default function About() {
           transition={{ duration: 1, delay: 0.4 }}
         >
           <div className="h-px flex-1 bg-gradient-to-r from-transparent to-gold-400/20" />
-          <span className="font-cinzel text-xs tracking-[0.5em] text-gold-500/40 uppercase hidden sm:block">
+          <span className="font-cinzel font-bold text-xs tracking-[0.5em] text-gold-500/40 uppercase hidden sm:block">
             Icarus Debate Academy
           </span>
           <div className="h-px flex-1 bg-gradient-to-l from-transparent to-gold-400/20" />

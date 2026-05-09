@@ -724,3 +724,199 @@ section:not(#hero)::before {
   background: rgba(212, 175, 55, 0.25);
   color: #FFD700;
 }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT THEME — 3D canvas & model adjustments
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Light theme: canvas is fully transparent (alpha:true in gl settings).
+   The atmosphere shader now renders a warm cream sky, so the canvas
+   blends naturally with the page bg — NO mix-blend-mode needed. */
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE — targeted performance & layout fixes
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Disable grain overlay on mobile — it's a fixed SVG filter that
+   composites on every single scroll event on a slow GPU */
+@media (max-width: 767px) {
+  body.grain-overlay::after {
+    display: none !important;
+  }
+
+  /* Reduce glass blur on mobile from 18px → 8px.
+     halves the GPU compositing cost on every repaint */
+  .glass-panel {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+
+  /* Achievements: make stat cards more compact on phones */
+  #achievements .glass-panel {
+    padding: 1rem !important;
+  }
+
+  /* Team cards: tighten padding on phones */
+  #team .rounded-2xl > div:last-child,
+  #team .rounded-xl  > div:last-child {
+    padding: 1.25rem !important;
+  }
+}
+
+/* Hover states should not activate on touch devices — they "stick"
+   after a tap and create visual confusion */
+@media (hover: none) {
+  .glass-panel:hover {
+    border-color: rgba(212, 175, 55, 0.13) !important;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.35), 0 1px 0 rgba(212,175,55,0.08) inset !important;
+  }
+  .card-shine::before {
+    display: none !important;
+  }
+  header a::after {
+    display: none !important;
+  }
+}
+
+/* Achievements text: ensure long award titles always wrap on small screens */
+#achievements .font-cormorant {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO — text visibility & light-theme mobile panel
+   ═══════════════════════════════════════════════════════════════ */
+
+/*
+  hero-title-shadow: subtle multi-layer shadow so the gold title
+  pops against BOTH the dark 3D model AND the light cream background.
+  Uses warm amber shadows (not grey) to complement the gold palette.
+*/
+.hero-title-shadow {
+  filter: drop-shadow(0 2px 16px rgba(0, 0, 0, 0.45))
+          drop-shadow(0 0 40px rgba(212, 175, 55, 0.30));
+}
+
+[data-theme="light"] .hero-title-shadow {
+  filter: drop-shadow(0 2px 12px rgba(60, 35, 0, 0.35))
+          drop-shadow(0 0 32px rgba(212, 175, 55, 0.40));
+}
+
+/* Tagline: needs a drop-shadow for legibility against the model */
+.hero-tagline {
+  color: rgba(255, 255, 255, 0.55);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="light"] .hero-tagline {
+  color: rgba(40, 25, 5, 0.80) !important;
+  text-shadow: 0 1px 8px rgba(247, 243, 234, 0.9);
+}
+
+/* Scroll cue label */
+[data-theme="light"] .hero-scroll-label {
+  color: rgba(100, 70, 10, 0.6) !important;
+}
+
+/*
+  hero-text-panel — mobile + light theme only:
+  A frosted-glass card sits BEHIND the text so it stays readable
+  over the warm golden model. Completely invisible in dark mode
+  and on desktop where the contrast is already handled by shadows.
+*/
+.hero-text-panel {
+  padding: 0; /* no visual effect by default */
+  border-radius: 0;
+  transition: background 0.4s ease, backdrop-filter 0.4s ease;
+}
+
+@media (max-width: 767px) {
+  [data-theme="light"] .hero-panel {
+
+    background: rgba(247, 243, 234, 0.32);
+
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+
+    border-radius: 28px;
+
+    padding: 20px 18px;
+
+    border: 1px solid rgba(212, 175, 55, 0.10);
+
+    box-shadow:
+      0 10px 30px rgba(100, 70, 10, 0.08),
+      inset 0 0px 0 rgba(255,255,255,0.65);
+    min-width:80vw;
+    max-width: 91vw;
+
+    margin-inline: auto;
+  }
+}
+@media (max-width: 767px) {
+  [data-theme="light"] .hero-title-shadow {
+    filter:
+      drop-shadow(0 1px 6px rgba(60,35,0,0.18))
+      drop-shadow(0 0 18px rgba(212,175,55,0.22));
+  }
+}
+
+/* ── Full light-theme text fix ────────────────────────────────
+   Cover ALL patterns: inline style rgba(255,255,255,*), Tailwind
+   text-white/* utilities, and CSS var(--text-muted).
+   Scoped to non-hero sections so the hero handles itself above. */
+
+/* Any inline-style pure white text becomes warm dark in light mode */
+[data-theme="light"] section:not(#hero) * {
+  --tw-text-opacity: 1;
+}
+
+/* Catch rgba(255,255,255,0.XX) inline styles on section elements */
+[data-theme="light"] .font-cormorant:not(#hero *),
+[data-theme="light"] .font-mono:not(#hero *),
+[data-theme="light"] .font-cinzel:not(#hero *) {
+  /* Use currentColor from parent; override only if text would be near-invisible */
+}
+
+/* Make sure gold-500 tones stay gold in light theme (they tend to wash out) */
+[data-theme="light"] .text-gold-500\/70,
+[data-theme="light"] .text-gold-500\/60,
+[data-theme="light"] .text-gold-500\/50,
+[data-theme="light"] .text-gold-500\/40 {
+  color: rgba(120, 82, 8, 0.85) !important;
+}
+
+/* Navigation links in light theme */
+[data-theme="light"] header nav a {
+  color: rgba(30, 20, 5, 0.80) !important;
+}
+[data-theme="light"] header nav a:hover {
+  color: rgba(30, 20, 5, 1) !important;
+}
+
+/* font-mono tracking labels that use text-white/XX inside glass panels */
+[data-theme="light"] .glass-panel .font-mono {
+  color: rgba(40, 28, 8, 0.65) !important;
+}
+
+/* Cormorant body text inside glass panels */
+[data-theme="light"] .glass-panel .font-cormorant {
+  color: rgba(40, 28, 8, 0.75) !important;
+}
+
+/* Section backgrounds in light theme */
+[data-theme="light"] section:not(#hero) {
+  background: var(--body-bg);
+}
+
+/* Inline style overrides for the most common direct rgba patterns */
+[data-theme="light"] [style*="rgba(255,255,255,0.5"],
+[data-theme="light"] [style*="rgba(255,255,255,0.4"],
+[data-theme="light"] [style*="rgba(255,255,255,0.3"],
+[data-theme="light"] [style*="rgba(255,255,255,0.2"] {
+  color: rgba(30, 20, 8, 0.70) !important;
+}

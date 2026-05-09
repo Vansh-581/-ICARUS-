@@ -1,194 +1,318 @@
 'use client';
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import SectionTitle from '@/components/ui/SectionTitle';
 
 interface FormState {
-  name: string;
-  email: string;
-  program: string;
-  message: string;
+  name: string; email: string; phone: string; program: string; message: string;
 }
+interface Errors { name?: string; email?: string; phone?: string; message?: string; }
+
+const EMPTY: FormState = { name: '', email: '', phone: '', program: '', message: '' };
+const LS_KEY = 'icarus-contact-draft';
 
 export default function Contact() {
-  const [form, setForm] = useState<FormState>({
-    name: '', email: '', program: '', message: '',
-  });
+  const [form,      setForm]      = useState<FormState>(EMPTY);
+  const [errors,    setErrors]    = useState<Errors>({});
+  const [focused,   setFocused]   = useState<string | null>(null);
+  const [loading,   setLoading]   = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [focused, setFocused] = useState<string | null>(null);
 
-  const handleChange = (key: keyof FormState, value: string) =>
-    setForm(prev => ({ ...prev, [key]: value }));
+  // Restore draft from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(LS_KEY);
+      if (saved) setForm(JSON.parse(saved));
+    } catch {}
+  }, []);
 
-  const handleSubmit = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (form.name && form.email) setSubmitted(true);
+  const handleChange = useCallback((key: keyof FormState, value: string) => {
+    setForm(prev => {
+      const next = { ...prev, [key]: value };
+      try { localStorage.setItem(LS_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+    // Clear error as user types
+    if (errors[key as keyof Errors]) setErrors(e => ({ ...e, [key]: undefined }));
+  }, [errors]);
+
+  const validate = (): boolean => {
+    const e: Errors = {};
+    if (!form.name.trim())                   e.name    = 'Full name is required';
+    if (!form.email.trim())                  e.email   = 'Email address is required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Enter a valid email address';
+    if (form.phone && !/^[\d\s\+\-()]{7,15}$/.test(form.phone)) e.phone = 'Enter a valid phone number';
+    if (!form.message.trim())                e.message = 'Please tell us about yourself';
+    setErrors(e);
+    return Object.keys(e).length === 0;
   };
 
-  const inputClass = (name: string) =>
-    `w-full bg-transparent border-b py-3 font-cormorant text-lg text-white/80 outline-none transition-all duration-300 placeholder:text-white/20 ${
-      focused === name ? 'border-gold-400' : 'border-white/10'
-    }`;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+    setLoading(true);
+    await new Promise(r => setTimeout(r, 1200)); // simulate network
+    setLoading(false);
+    setSubmitted(true);
+    try { localStorage.removeItem(LS_KEY); } catch {}
+  };
+
+  const Field = ({
+    name, label, type = 'text', required = false, children,
+  }: {
+    name: keyof FormState; label: string; type?: string; required?: boolean;
+    children?: React.ReactNode;
+  }) => {
+    const isFocused = focused === name;
+    const hasValue  = !!form[name];
+    const error     = errors[name as keyof Errors];
+    return (
+      <div className="relative pt-5">
+        {/* Floating label */}
+        <label
+          className="absolute left-0 font-mono text-[10px] tracking-[0.25em] uppercase transition-all duration-250 pointer-events-none"
+          style={{
+            top: isFocused || hasValue ? 0 : '1.4rem',
+            fontSize: isFocused || hasValue ? '9px' : '13px',
+            color: error ? 'rgba(239,68,68,0.8)' : isFocused ? 'rgba(212,175,55,0.9)' : 'rgba(255,255,255,0.28)',
+            fontFamily: isFocused || hasValue ? 'inherit' : 'var(--font-cormorant, serif)',
+          }}
+        >
+          {label}{required && ' *'}
+        </label>
+
+        {children || (
+          <input
+            type={type}
+            value={form[name]}
+            onChange={e => handleChange(name, e.target.value)}
+            onFocus={() => setFocused(name)}
+            onBlur={() => setFocused(null)}
+            className="w-full bg-transparent pt-2 pb-3 font-cormorant text-lg outline-none transition-colors duration-250 placeholder:text-transparent"
+            style={{ color: 'rgba(255,255,255,0.82)', borderBottom: `1px solid ${error ? 'rgba(239,68,68,0.6)' : isFocused ? 'rgba(212,175,55,0.7)' : 'rgba(255,255,255,0.1)'}` }}
+          />
+        )}
+
+        {/* Focus line */}
+        <motion.div
+          className="absolute bottom-0 left-0 h-px"
+          style={{ background: 'linear-gradient(90deg, #D4AF37, #FFD700)' }}
+          initial={false}
+          animate={{ scaleX: isFocused ? 1 : 0, originX: 0 }}
+          transition={{ duration: 0.25 }}
+        />
+
+        {/* Error message */}
+        <AnimatePresence>
+          {error && (
+            <motion.p
+              initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              className="mt-1 font-mono text-[10px] tracking-wider"
+              style={{ color: 'rgba(239,68,68,0.8)' }}
+            >
+              {error}
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
 
   return (
-    <section id="contact" className="relative py-32 overflow-hidden">
+    <section id="contact" className="relative py-24 sm:py-32 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px]"
-          style={{ background: 'radial-gradient(ellipse, rgba(212,175,55,0.04) 0%, transparent 70%)' }}
-        />
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] opacity-60"
+          style={{ background: 'radial-gradient(ellipse, rgba(212,175,55,0.04) 0%, transparent 65%)' }} />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="grid lg:grid-cols-2 gap-20 items-start">
+      <div className="relative max-w-7xl mx-auto px-5 sm:px-6 lg:px-12">
+        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-start">
 
-          {/* Left — info */}
+          {/* ── Left: info ─────────────────────────────────────── */}
           <div>
-            <SectionTitle
-              eyebrow="Begin Your Ascent"
-              title="Contact Us"
-              align="left"
-            />
+            <SectionTitle eyebrow="Begin Your Ascent" title="Contact Us" align="left" />
 
             <motion.p
-              className="font-cormorant text-xl text-white/50 leading-relaxed mt-8 mb-12"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.2 }}
+              className="font-cormorant text-gold-500/40 text-lg sm:text-xl leading-relaxed mt-8 mb-12"
+              style={{ color: 'var(--text-muted)' }}
+
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.7, delay: 0.2 }}
             >
-              Every great debate begins with a single bold statement. Yours starts here. 
-              Reach out and we will guide you to the right program.
+              Every great debate begins with a single bold statement.
+              Yours starts here — reach out and we will place you in the right program.
             </motion.p>
 
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-7">
               {[
-                { label: 'Email', value: 'hello@icarusdebate.academy', icon: '✉' },
-                { label: 'Phone', value: '+91 98765 43210', icon: '◈' },
+                { label: 'Email',    value: 'hello@icarusdebate.academy',    icon: '✉' },
+                { label: 'Phone',    value: '+91 98765 43210',               icon: '◈' },
                 { label: 'Location', value: 'New Delhi · Mumbai · Bangalore', icon: '◉' },
               ].map((item, i) => (
-                <motion.div
-                  key={item.label}
-                  className="flex items-start gap-5 group"
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: i * 0.1 + 0.3 }}
+                <motion.div key={item.label} className="flex items-start gap-5"
+                  initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }} transition={{ duration: 0.6, delay: i * 0.1 + 0.3 }}
                 >
-                  <span className="gold-text text-lg mt-1">{item.icon}</span>
+                  <span className="text-lg mt-0.5" style={{ color: '#D4AF37' }}>{item.icon}</span>
                   <div>
-                    <p className="font-mono text-xs tracking-[0.4em] text-gold-500/40 uppercase mb-1">
-                      {item.label}
-                    </p>
-                    <p className="font-cormorant text-lg text-white/65">{item.value}</p>
+                    <p className="font-mono text-[14px] font-bold tracking-[0.4em] text-gold-500 uppercase mb-1"
+                      >{item.label}</p>
+                    <p className="font-cormorant text-gold-650 text-lg">{item.value}</p>
                   </div>
                 </motion.div>
               ))}
             </div>
+
+            {/* Hours */}
+            <motion.div className="mt-10 pt-8 border-t" style={{ borderColor: 'rgba(212,175,55,0.1)' }}
+              initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+            >
+              <p className="font-mono font-bold text-[13px] text-gold-600 tracking-[0.4em] uppercase mb-3" style={{ color: 'rgba(212,175,55,0.45)' }}>
+                Response Time
+              </p>
+              <p className="font-cormorant text-black-400 text-base" >
+                We respond to all enquiries within 24 hours on business days.
+              </p>
+            </motion.div>
           </div>
 
-          {/* Right — form */}
+          {/* ── Right: form ────────────────────────────────────── */}
           <motion.div
-            className="glass-panel p-10 relative overflow-hidden"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            className="relative overflow-hidden rounded-2xl p-8 sm:p-10"
+            style={{ background: 'rgba(8,6,22,0.65)', backdropFilter: 'blur(18px)', border: '1px solid rgba(212,175,55,0.14)' }}
+            initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-400/40 to-transparent" />
+            {/* Top shimmer line */}
+            <div className="absolute top-0 left-0 right-0 h-px"
+              style={{ background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent)' }} />
 
-            {!submitted ? (
-              <div className="flex flex-col gap-8">
-                <h3 className="font-cinzel text-xl text-white font-semibold">
-                  Enrol or Enquire
-                </h3>
+            <AnimatePresence mode="wait">
+              {!submitted ? (
+                <motion.form key="form" onSubmit={handleSubmit} noValidate
+                  className="flex flex-col gap-7"
+                  initial={{ opacity: 1 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.25 }}
+                >
+                  <h3 className="font-cinzel text-xl font-semibold" style={{ color: 'rgba(255,248,220,0.95)' }}>
+                    Enrol or Enquire
+                  </h3>
 
-                <div className="flex flex-col gap-6">
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Your Full Name"
-                      value={form.name}
-                      onChange={e => handleChange('name', e.target.value)}
-                      onFocus={() => setFocused('name')}
-                      onBlur={() => setFocused(null)}
-                      className={inputClass('name')}
-                    />
+                  <div className="grid sm:grid-cols-2 gap-7">
+                    <Field name="name"  label="Full Name"     required />
+                    <Field name="phone" label="Phone Number" type="tel" />
                   </div>
-                  <div>
-                    <input
-                      type="email"
-                      placeholder="Email Address"
-                      value={form.email}
-                      onChange={e => handleChange('email', e.target.value)}
-                      onFocus={() => setFocused('email')}
-                      onBlur={() => setFocused(null)}
-                      className={inputClass('email')}
-                    />
-                  </div>
-                  <div>
+                  <Field name="email" label="Email Address" type="email" required />
+
+                  {/* Program select */}
+                  <div className="relative pt-5">
+                    <label className="absolute left-0 top-0 font-mono text-[9px] tracking-[0.25em] uppercase"
+                      style={{ color: 'rgba(212,175,55,0.7)' }}>Program</label>
                     <select
                       value={form.program}
                       onChange={e => handleChange('program', e.target.value)}
                       onFocus={() => setFocused('program')}
                       onBlur={() => setFocused(null)}
-                      className={`${inputClass('program')} cursor-pointer`}
+                      className="w-full bg-transparent pt-2 pb-3 font-cormorant text-lg outline-none cursor-pointer appearance-none"
+                      style={{
+                        color: form.program ? 'rgba(255,255,255,0.82)' : 'rgba(255,255,255,0.28)',
+                        borderBottom: `1px solid ${focused === 'program' ? 'rgba(212,175,55,0.7)' : 'rgba(255,255,255,0.1)'}`,
+                      }}
                     >
-                      <option value="" className="bg-obsidian-300 text-white/60">
-                        Select a Program
-                      </option>
-                      <option value="foundational" className="bg-obsidian-300">
-                        Foundational Oratory
-                      </option>
-                      <option value="competitive" className="bg-obsidian-300">
-                        Competitive Debate
-                      </option>
-                      <option value="advanced" className="bg-obsidian-300">
-                        Advanced Advocacy
-                      </option>
-                      <option value="leadership" className="bg-obsidian-300">
-                        Leadership Lab
-                      </option>
+                      <option value="" style={{ background: '#0c0c1a' }}>Select a Program</option>
+                      <option value="foundational" style={{ background: '#0c0c1a' }}>Foundational Oratory</option>
+                      <option value="competitive"  style={{ background: '#0c0c1a' }}>Competitive Debate</option>
+                      <option value="advanced"     style={{ background: '#0c0c1a' }}>Advanced Advocacy</option>
+                      <option value="leadership"   style={{ background: '#0c0c1a' }}>Leadership Lab</option>
                     </select>
+                    {/* Custom arrow */}
+                    <span className="absolute right-0 bottom-3.5 pointer-events-none text-xs"
+                      style={{ color: 'rgba(212,175,55,0.5)' }}>▾</span>
+                    <motion.div className="absolute bottom-0 left-0 h-px"
+                      style={{ background: 'linear-gradient(90deg,#D4AF37,#FFD700)' }}
+                      animate={{ scaleX: focused === 'program' ? 1 : 0, originX: 0 }}
+                      transition={{ duration: 0.25 }} />
                   </div>
-                  <div>
+
+                  <Field name="message" label="Your Message" required>
                     <textarea
-                      placeholder="Tell us about yourself or your student…"
                       value={form.message}
                       onChange={e => handleChange('message', e.target.value)}
                       onFocus={() => setFocused('message')}
                       onBlur={() => setFocused(null)}
                       rows={4}
-                      className={`${inputClass('message')} resize-none`}
+                      className="w-full bg-transparent pt-2 pb-3 font-cormorant text-lg outline-none resize-none placeholder:text-transparent"
+                      style={{
+                        color: 'rgba(255,255,255,0.82)',
+                        borderBottom: `1px solid ${errors.message ? 'rgba(239,68,68,0.6)' : focused === 'message' ? 'rgba(212,175,55,0.7)' : 'rgba(255,255,255,0.1)'}`,
+                      }}
                     />
-                  </div>
-                </div>
+                  </Field>
 
-                <motion.button
-                  whileHover={{ scale: 1.02, backgroundColor: 'rgba(212,175,55,0.15)' }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={handleSubmit}
-                  className="w-full py-4 border border-gold-400/50 text-gold-300 font-cinzel text-sm tracking-[0.3em] uppercase transition-all duration-300"
+                  <motion.button
+                    type="submit"
+                    disabled={loading}
+                    whileHover={!loading ? { scale: 1.01, boxShadow: '0 0 28px rgba(212,175,55,0.2)' } : {}}
+                    whileTap={!loading ? { scale: 0.98 } : {}}
+                    className="w-full py-4 rounded-none font-cinzel text-sm tracking-[0.3em] uppercase transition-all duration-300 flex items-center justify-center gap-3"
+                    style={{
+                      background: loading ? 'rgba(212,175,55,0.08)' : 'rgba(212,175,55,0.1)',
+                      border: '1px solid rgba(212,175,55,0.45)',
+                      color: loading ? 'rgba(212,175,55,0.5)' : 'rgba(212,175,55,0.92)',
+                      cursor: loading ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {loading ? (
+                      <>
+                        <motion.span
+                          className="w-4 h-4 border-2 border-t-transparent rounded-full"
+                          style={{ borderColor: 'rgba(212,175,55,0.5)', borderTopColor: 'transparent' }}
+                          animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 0.8, ease: 'linear' }}
+                        />
+                        Sending…
+                      </>
+                    ) : 'Send Enquiry'}
+                  </motion.button>
+
+                  <p className="font-mono text-[9px] text-center tracking-wider"
+                    style={{ color: 'rgba(255,255,255,0.2)' }}>
+                    * Required fields · Your draft is saved automatically
+                  </p>
+                </motion.form>
+              ) : (
+                <motion.div key="success"
+                  className="flex flex-col items-center justify-center py-20 gap-6 text-center"
+                  initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6, ease: [0.22,1,0.36,1] }}
                 >
-                  Send Enquiry
-                </motion.button>
-              </div>
-            ) : (
-              <motion.div
-                className="flex flex-col items-center justify-center py-16 gap-6 text-center"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6 }}
-              >
-                <span className="text-5xl gold-text">✦</span>
-                <h3 className="font-cinzel text-2xl text-white font-semibold">
-                  Your Ascent Begins
-                </h3>
-                <p className="font-cormorant text-lg text-white/50 max-w-xs">
-                  We have received your enquiry and will be in touch within 24 hours.
-                </p>
-              </motion.div>
-            )}
+                  {/* Animated gold check */}
+                  <motion.div
+                    className="w-20 h-20 rounded-full flex items-center justify-center"
+                    style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)' }}
+                    initial={{ scale: 0 }} animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
+                  >
+                    <motion.span
+                      className="text-4xl"
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+                      style={{ color: '#D4AF37' }}
+                    >✦</motion.span>
+                  </motion.div>
+                  <h3 className="font-cinzel text-2xl font-semibold" style={{ color: 'rgba(255,248,220,0.95)' }}>
+                    Your Ascent Begins
+                  </h3>
+                  <p className="font-cormorant text-lg max-w-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                    We have received your enquiry and will be in touch within 24 hours.
+                  </p>
+                  <button onClick={() => { setSubmitted(false); setForm(EMPTY); }}
+                    className="font-mono text-[10px] tracking-[0.3em] uppercase mt-2 transition-opacity hover:opacity-70"
+                    style={{ color: 'rgba(212,175,55,0.5)' }}>
+                    Submit Another
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         </div>
       </div>
