@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap');
+/* Fonts loaded via <link> tags in layout.tsx — no blocking @import */
 
 @tailwind base;
 @tailwind components;
@@ -600,4 +600,127 @@ section:not(#hero) {
 #hero .sticky {
   transform: translateZ(0);
   will-change: contents;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   PREMIUM FEEL — global upgrades
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Richer glass panels ─────────────────────────────────────── */
+.glass-panel {
+  /* Slightly warmer, deeper tint for more depth */
+  background: rgba(8, 6, 22, 0.58) !important;
+  border-color: rgba(212, 175, 55, 0.13) !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.35), 0 1px 0 rgba(212,175,55,0.08) inset !important;
+  transition: box-shadow 0.35s ease, border-color 0.35s ease !important;
+}
+
+.glass-panel:hover {
+  border-color: rgba(212, 175, 55, 0.28) !important;
+  box-shadow: 0 12px 50px rgba(0,0,0,0.4), 0 0 32px rgba(212,175,55,0.06) inset !important;
+}
+
+/* Light theme glass */
+[data-theme="light"] .glass-panel {
+  background: rgba(247, 243, 234, 0.82) !important;
+  border-color: rgba(139, 105, 20, 0.2) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 1px 0 rgba(212,175,55,0.15) inset !important;
+}
+
+/* ── Gold divider ornament ───────────────────────────────────── */
+.gold-section-rule {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 320px;
+}
+.gold-section-rule::before,
+.gold-section-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,0.4), transparent);
+}
+
+/* ── Navigation premium ──────────────────────────────────────── */
+header a {
+  position: relative;
+}
+header a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0; right: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, #D4AF37, #FFD700);
+  transition: right 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+header a:hover::after { right: 0; }
+
+/* ── SectionTitle premium ────────────────────────────────────── */
+.icarus-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.icarus-divider::before,
+.icarus-divider::after {
+  content: '';
+  height: 1px;
+  width: 48px;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,0.5));
+}
+.icarus-divider::after {
+  background: linear-gradient(90deg, rgba(212,175,55,0.5), transparent);
+}
+
+/* ── Card shine sweep on hover ───────────────────────────────── */
+@keyframes cardShine {
+  from { transform: translateX(-120%) skewX(-20deg); }
+  to   { transform: translateX(220%) skewX(-20deg); }
+}
+.card-shine {
+  position: relative;
+  overflow: hidden;
+}
+.card-shine::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(212,175,55,0.08) 50%, transparent 60%);
+  transform: translateX(-120%) skewX(-20deg);
+  pointer-events: none;
+  z-index: 10;
+}
+.card-shine:hover::before {
+  animation: cardShine 0.65s ease forwards;
+}
+
+/* ── Background section texture ─────────────────────────────── */
+section:not(#hero)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(212,175,55,0.03) 1px, transparent 0);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Scrollbar — premium thin gold ──────────────────────────── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #D4AF37, #8B6914);
+  border-radius: 2px;
+}
+
+/* ── Selection color ─────────────────────────────────────────── */
+::selection {
+  background: rgba(212, 175, 55, 0.25);
+  color: #FFD700;
 }

@@ -10,54 +10,64 @@ useGLTF.preload('/Icarus_model_3d.glb');
 interface IcarusCharacterProps {
   scrollProgressRef: React.MutableRefObject<number>;
   isMobile?: boolean;
+  isLow?: boolean;
 }
 
-const VERT_PREAMBLE = /* glsl */ `
+// ── Vertex shader injection — organic feather displacement ────
+const VERT_UNIFORMS = `
 uniform float uTime;
 uniform float uScroll;
 `;
 
-const VERT_INJECT = /* glsl */ `
-float normY = (transformed.y + 1.0) * 0.5;
-float normX = abs(transformed.x) / 0.775;
+const VERT_INJECT = `
+  float normY = (transformed.y + 1.0) * 0.5;
+  float normX = abs(transformed.x) / 0.78;
+  float wingY = smoothstep(0.40, 0.80, normY);
+  float wingX = smoothstep(0.10, 0.55, normX);
+  float mask  = wingY * wingX;
 
-float wingY = smoothstep(0.42, 0.78, normY);
-float wingX = smoothstep(0.12, 0.55, normX);
-float wingMask = wingY * wingX;
+  // Micro-feather ripple
+  float r1 = sin(uTime * 2.4 + transformed.x * 7.0 + transformed.y * 3.5);
+  float r2 = cos(uTime * 1.9 + transformed.y * 4.5);
+  transformed.y += (r1 * 0.007 + r2 * 0.004) * mask;
+  transformed.z += cos(uTime * 1.7 + transformed.x * 5.0) * 0.005 * mask;
 
-float ff1 = sin(uTime * 2.2 + transformed.x * 6.0);
-float ff2 = cos(uTime * 1.8 + transformed.y * 4.0);
-
-float featherY = (ff1 * 0.006 + ff2 * 0.004) * wingMask;
-float featherZ = cos(uTime * 1.8 + transformed.x * 4.0) * 0.004 * wingMask;
-
-float flapFreq = 1.2 + uScroll * 0.4;
-float flapAmp  = (0.045 + uScroll * 0.045) * wingY;
-float flapAngle = sin(uTime * flapFreq) * flapAmp;
-
-float leverY = smoothstep(0.45, 1.0, normY) * (normY - 0.45) * 2.0;
-float flapY  = flapAngle * leverY * sign(transformed.x);
-float flapZ  = -flapAngle * leverY * 0.25;
-
-transformed.y += featherY + flapY;
-transformed.z += featherZ + flapZ;
+  // Wing flap — accelerates with scroll progress
+  float freq  = 1.25 + uScroll * 0.5;
+  float amp   = (0.05 + uScroll * 0.06) * wingY;
+  float flap  = sin(uTime * freq * 6.2831) * amp;
+  float lever = smoothstep(0.46, 1.0, normY) * (normY - 0.46) * 2.2;
+  transformed.y += flap * lever * sign(transformed.x);
+  transformed.z -= flap * lever * 0.28;
 `;
 
-const FRAG_PREAMBLE = /* glsl */ `
+// ── Fragment shader injection — gold glow + rim shimmer ───────
+const FRAG_UNIFORMS = `
 uniform float uTime;
 uniform float uScroll;
 `;
 
-const FRAG_INJECT = /* glsl */ `
-float pulse   = sin(uTime * 1.2) * 0.5 + 0.5;
-float glowAmt = (0.08 + uScroll * 0.2 + pulse * 0.05);
-vec3 goldTint = vec3(0.92, 0.75, 0.25);
-gl_FragColor.rgb += goldTint * glowAmt;
+const FRAG_INJECT = `
+  // Pulsing core glow
+  float pulse = sin(uTime * 1.1) * 0.5 + 0.5;
+
+  // Gold tint strengthens as character ascends
+  float glow = 0.12 + uScroll * 0.28 + pulse * 0.06;
+  gl_FragColor.rgb += vec3(0.90, 0.72, 0.18) * glow;
+
+  // Edge rim brightening (fake fresnel) — creates halo effect on wings
+  // vNormal is in view space; dot with view direction approximates fresnel
+  float fresnel = 1.0 - clamp(dot(normalize(vNormal), vec3(0.0, 0.0, 1.0)), 0.0, 1.0);
+  fresnel = pow(fresnel, 2.2);
+  gl_FragColor.rgb += vec3(1.0, 0.85, 0.3) * fresnel * (0.3 + uScroll * 0.5);
+
+  // Feather iridescence — subtle blue-gold shift on grazing angles
+  float iri = pow(fresnel, 4.0);
+  gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.6, 0.75, 1.0), iri * 0.12);
 `;
 
 export default function IcarusCharacter({
-  scrollProgressRef,
-  isMobile = false,
+  scrollProgressRef, isMobile = false, isLow = false,
 }: IcarusCharacterProps) {
   const { scene }  = useGLTF('/Icarus_model_3d.glb');
   const groupRef   = useRef<THREE.Group>(null);
@@ -69,43 +79,44 @@ export default function IcarusCharacter({
     clone.traverse((child) => {
       if (!(child instanceof THREE.Mesh)) return;
 
-      const mat = (child.material as THREE.MeshStandardMaterial).clone();
+      const base = child.material as THREE.MeshStandardMaterial;
+      const mat  = base.clone();
 
       mat.onBeforeCompile = (shader) => {
         shader.uniforms.uTime   = { value: 0 };
         shader.uniforms.uScroll = { value: 0 };
 
         shader.vertexShader = shader.vertexShader
-          .replace('void main() {', `${VERT_PREAMBLE}\nvoid main() {`)
+          .replace('void main() {', `${VERT_UNIFORMS}\nvoid main() {`)
           .replace('#include <project_vertex>', `${VERT_INJECT}\n#include <project_vertex>`);
 
         shader.fragmentShader = shader.fragmentShader
-          .replace('void main() {', `${FRAG_PREAMBLE}\nvoid main() {`)
+          .replace('void main() {', `${FRAG_UNIFORMS}\nvoid main() {`)
           .replace('#include <tonemapping_fragment>', `${FRAG_INJECT}\n#include <tonemapping_fragment>`);
 
         shaderRef.current = shader;
       };
 
+      // Richer gold material settings
+      mat.color             = new THREE.Color(isLow ? '#d4a520' : '#f0c040');
+      mat.metalness         = 1.0;
+      mat.roughness         = isLow ? 0.35 : 0.18;
+      mat.emissive          = new THREE.Color('#6b4a00');
+      mat.emissiveIntensity = isLow ? 0.15 : 0.28;
+      // No env map in scene → set to 0 so the uniform is never sampled
+      mat.envMapIntensity   = 0;
       mat.needsUpdate       = true;
-      mat.roughness         = 0.22;
-      mat.metalness         = 1;
-      mat.envMapIntensity   = 2.2;
-      mat.color             = new THREE.Color('#f5d062');
-      mat.emissive          = new THREE.Color('#5c4200');
-      mat.emissiveIntensity = 0.18;
 
-      child.material    = mat;
-      child.castShadow  = false;
+      child.material      = mat;
+      child.castShadow    = false;
       child.receiveShadow = false;
-
-      // Model is always in the frustum — skip the bounds check every frame
-      child.frustumCulled = false;
+      child.frustumCulled = false; // always in view — skip bounds check
     });
 
     return clone;
-  }, [scene]);
+  }, [scene, isLow]);
 
-  useFrame((state, delta) => {
+  useFrame((state) => {
     const t = state.clock.elapsedTime;
     const p = scrollProgressRef.current;
 
@@ -116,20 +127,23 @@ export default function IcarusCharacter({
 
     if (!groupRef.current) return;
 
+    // Rise with scroll, gentle sinusoidal hover
     groupRef.current.position.y =
-      (isMobile ? -0.2 : -0.5) + p * 8 + Math.sin(t * 0.6) * 0.045;
+      (isMobile ? -0.25 : -0.55) + p * 8.2 + Math.sin(t * 0.58) * 0.05;
 
-    groupRef.current.rotation.y =
-      p * 0.25 + Math.sin(t * 0.18) * 0.08;
+    // Subtle yaw (side-to-side rotation)
+    groupRef.current.rotation.y = p * 0.28 + Math.sin(t * 0.16) * 0.09;
 
-    groupRef.current.rotation.z = Math.sin(t * 0.2) * 0.03;
+    // Very gentle roll
+    groupRef.current.rotation.z = Math.sin(t * 0.19) * 0.035;
 
-    const breathe = 1 + Math.sin(t * 0.5) * 0.012;
-    groupRef.current.scale.setScalar(breathe * (isMobile ? 0.84 : 1));
+    // Subtle breath scale
+    const breathe = 1 + Math.sin(t * 0.48) * 0.011;
+    groupRef.current.scale.setScalar(breathe * (isMobile ? 0.82 : 1));
   });
 
   return (
-    <group ref={groupRef} position={[0, isMobile ? -0.2 : -0.5, 0]}>
+    <group ref={groupRef} position={[0, isMobile ? -0.25 : -0.55, 0]}>
       <primitive object={clonedScene} scale={[2.8, 2.8, 2.8]} />
     </group>
   );

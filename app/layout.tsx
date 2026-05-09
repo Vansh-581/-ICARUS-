@@ -4,8 +4,7 @@ import { ThemeProvider } from '@/context/ThemeContext';
 
 export const metadata: Metadata = {
   title: 'ICARUS Debate Academy — Ascend Beyond Limits',
-  description:
-    'ICARUS Debate Academy — where bold thinkers learn to argue, persuade, and lead with mythological clarity and futuristic precision.',
+  description: 'ICARUS Debate Academy — where bold thinkers learn to argue, persuade, and lead.',
   keywords: ['debate', 'academy', 'public speaking', 'argumentation', 'ICARUS'],
   icons: { icon: '/favicon.svg', shortcut: '/favicon.svg' },
 };
@@ -16,36 +15,38 @@ export const viewport: Viewport = {
   themeColor: '#0c0c1a',
 };
 
-/**
- * Device-tier detection — runs as an inline script BEFORE React hydrates.
- * Sets data-perf="low|mid|high" on <html> so CSS rules take effect on
- * the very first paint with zero layout shift or flicker.
- *
- * Criteria:
- *  low  → ≤2 GB RAM or ≤2 CPU cores  (old phones, budget laptops)
- *  mid  → ≤4 GB RAM or ≤4 CPU cores
- *  high → everything else
- */
-const DEVICE_TIER_SCRIPT = `
-(function(){
-  try {
-    var mem   = navigator.deviceMemory;
-    var cores = navigator.hardwareConcurrency;
-    var tier  = 'high';
-    if      ((mem && mem   <= 2) || (cores && cores <= 2)) tier = 'low';
-    else if ((mem && mem   <= 4) || (cores && cores <= 4)) tier = 'mid';
-    document.documentElement.setAttribute('data-perf', tier);
-  } catch(e) {}
-})();
-`.trim();
+// Runs before React hydrates: stamps data-perf on <html> so CSS tier rules
+// apply on the very first paint with zero flicker.
+const PERF_SCRIPT = `(function(){try{
+  var m=navigator.deviceMemory,c=navigator.hardwareConcurrency,t='high';
+  if((m&&m<=2)||(c&&c<=2))t='low';
+  else if((m&&m<=4)||(c&&c<=4))t='mid';
+  document.documentElement.setAttribute('data-perf',t);
+}catch(e){}})();`.trim();
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning data-theme="dark" data-perf="high">
       <head>
-        {/* Runs synchronously before any paint — stamps the perf tier so
-            CSS rules (no backdrop-filter, no shimmer, etc.) apply instantly */}
-        <script dangerouslySetInnerHTML={{ __html: DEVICE_TIER_SCRIPT }} />
+        {/* Device-tier detection — must run before any paint */}
+        <script dangerouslySetInnerHTML={{ __html: PERF_SCRIPT }} />
+
+        {/* Preconnect to Google Fonts domains — tells the browser to open
+            the TCP/TLS connection before it even sees the stylesheet link */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+
+        {/* Non-blocking font load — <link rel="stylesheet"> in <head> is
+            parsed async by modern browsers, unlike CSS @import which blocks
+            the entire stylesheet cascade until the font CSS arrives */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap"
+        />
+
+        {/* Preload the GLB — starts fetching at highest priority, before
+            React even boots. Eliminates the "model pop-in" on first visit. */}
+        <link rel="preload" href="/Icarus_model_3d.glb" as="fetch" crossOrigin="anonymous" />
       </head>
       <body className="grain-overlay">
         <ThemeProvider>
