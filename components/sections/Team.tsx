@@ -137,6 +137,7 @@ const INTERNS: Member[] = [
     credentials: ['Intern', 'Coordination', 'Events'],
     accentFrom: 'rgba(212,175,55,0.16)',
     accentTo: 'rgba(139,105,20,0.04)',
+    photoSrc: '/team/ashita-manyal.jpg',
   },
   {
     name: 'AVAAPYA KAK',
@@ -146,6 +147,7 @@ const INTERNS: Member[] = [
     credentials: ['Intern', 'Research', 'Operations'],
     accentFrom: 'rgba(212,175,55,0.18)',
     accentTo: 'rgba(212,175,55,0.03)',
+    photoSrc: '/team/avaapya-kak.jpg',
   },
   {
     name: 'ELISHA',
@@ -155,6 +157,7 @@ const INTERNS: Member[] = [
     credentials: ['Intern', 'Team Support', 'Events'],
     accentFrom: 'rgba(212,175,55,0.15)',
     accentTo: 'rgba(139,105,20,0.04)',
+    photoSrc: '/team/elisha.jpg',
   },
   {
     name: 'MAZHAR MAHMOD',
@@ -164,15 +167,17 @@ const INTERNS: Member[] = [
     credentials: ['Intern', 'Logistics', 'Research'],
     accentFrom: 'rgba(212,175,55,0.17)',
     accentTo: 'rgba(212,175,55,0.03)',
+    photoSrc: '/team/mazhar-mahmod.jpg',
   },
   {
-    name: 'VANIYA',
+    name: 'VANNIYA',
     role: 'Intern',
     initials: 'V',
     bio: 'Supports ICARUS with communication, coordination, and event tasks.',
     credentials: ['Intern', 'Communication', 'Coordination'],
     accentFrom: 'rgba(212,175,55,0.19)',
     accentTo: 'rgba(139,105,20,0.04)',
+    photoSrc: '/team/vaniya.jpg',
   },
 ];
 
