@@ -27,7 +27,6 @@ const About       = dynamic(() => import('@/components/sections/About'));
 const Mission     = dynamic(() => import('@/components/sections/Mission'));
 const CoreValues  = dynamic(() => import('@/components/sections/CoreValues'));
 const Programs    = dynamic(() => import('@/components/sections/Programs'));
-const Achievements = dynamic(() => import('@/components/sections/Achievements'));
 const Team        = dynamic(() => import('@/components/sections/Team'));
 const Contact     = dynamic(() => import('@/components/sections/Contact'));
 const FinalCTA    = dynamic(() => import('@/components/sections/FinalCTA'));
@@ -49,7 +48,6 @@ export default function HomePage() {
         <Mission />
         <CoreValues />
         <Programs />
-        <Achievements />
         <Team />
         <Contact />
         <FinalCTA />

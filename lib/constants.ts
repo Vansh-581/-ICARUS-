@@ -1,9 +1,11 @@
 export const SITE = {
-  name: 'ICARUS Debate Academy',
-  tagline: 'Dare to fly where logic becomes legend.',
-  email: 'hello@icarusdebate.academy',
-  phone: '+91 98765 43210',
-  locations: ['New Delhi', 'Mumbai', 'Bangalore'],
+  name: 'ICARUS',
+  tagline: 'Learn. Grow. Inspire.',
+  email: 'icarusdebate@gmail.com',
+  phone: '+91 8825006162',
+  instagram: 'https://www.instagram.com/icarus.debate/',
+  instagramHandle: '@icarus.debate',
+  locations: ['Jammu'],
 };
 
 export const COLORS = {

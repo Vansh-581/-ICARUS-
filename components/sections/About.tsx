@@ -3,17 +3,17 @@
 import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import SectionTitle from '@/components/ui/SectionTitle';
-import GlassCard    from '@/components/ui/GlassCard';
-import gsap         from 'gsap';
+import GlassCard from '@/components/ui/GlassCard';
+import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const STATS = [
-  { value: '800+',  label: 'Alumni Worldwide'   },
-  { value: '12',    label: 'Years of Excellence' },
-  { value: '94%',   label: 'Tournament Win Rate' },
-  { value: '3',     label: 'International Titles'},
+  { value: '800+', label: 'Students Trained' },
+  { value: '1', label: 'Year of Excellence' },
+  { value: '94%', label: 'Positive Feedback Rate' },
+  { value: '7', label: 'Sessions + Events' },
 ];
 
 export default function About() {
@@ -26,8 +26,10 @@ export default function About() {
           trigger: sectionRef.current,
           start: 'top 70%',
         },
-        y: 30, opacity: 0,
-        stagger: 0.1, duration: 0.7,
+        y: 30,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 0.7,
         ease: 'power3.out',
       });
     }, sectionRef);
@@ -36,7 +38,6 @@ export default function About() {
 
   return (
     <section id="about" ref={sectionRef} className="relative py-20 sm:py-32 overflow-hidden">
-      {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none">
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px]"
@@ -46,12 +47,10 @@ export default function About() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-
-          {/* Left — text */}
           <div className="flex flex-col gap-7 lg:gap-10">
             <SectionTitle
               eyebrow="Who We Are"
-              title="Born From Myth, Built for Minds"
+              title="Born From Myth, Built for Debate"
               align="left"
             />
 
@@ -63,26 +62,24 @@ export default function About() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              Like Icarus who dared to soar beyond all convention, we train thinkers 
-              who refuse the gravity of mediocrity. ICARUS Debate Academy is not merely 
-              an institution — it is an ascension.
+              Like Icarus who dared to soar beyond all convention, we train thinkers
+              who refuse the gravity of mediocrity. ICARUS is built to help
+              students speak with confidence, clarity, and purpose.
             </motion.p>
 
             <motion.p
-              className="font-cormorant  text-base sm:text-lg leading-relaxed"
+              className="font-cormorant text-base sm:text-lg leading-relaxed"
               style={{ color: 'var(--text-muted)' }}
-              
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.35 }}
             >
-              Founded on the principle that rigorous argumentation, elegant expression, 
-              and unshakeable logic are the true wings of human progress. Every student 
-              who trains here learns not just to debate — but to reshape reality with words.
+              Founded on the principle that rigorous argumentation, elegant expression,
+              and unshakeable logic are the true wings of human progress. Every student
+              who trains here learns not just to debate, but to grow into a sharper voice.
             </motion.p>
 
-            {/* Gold decorative line */}
             <motion.div
               className="h-px bg-gradient-to-r from-gold-400 to-transparent"
               style={{ width: 0 }}
@@ -92,7 +89,6 @@ export default function About() {
             />
           </div>
 
-          {/* Right — stats grid */}
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {STATS.map((stat, i) => (
               <GlassCard
@@ -103,8 +99,10 @@ export default function About() {
                 <p className="font-cinzel text-3xl sm:text-4xl md:text-5xl font-bold gold-text mb-2">
                   {stat.value}
                 </p>
-                <p className="font-mono text-xs tracking-[0.2em] sm:tracking-[0.3em] uppercase"
-                   style={{ color: 'var(--text-faint)' }}>
+                <p
+                  className="font-mono text-xs tracking-[0.2em] sm:tracking-[0.3em] uppercase"
+                  style={{ color: 'var(--text-faint)' }}
+                >
                   {stat.label}
                 </p>
               </GlassCard>
@@ -112,7 +110,6 @@ export default function About() {
           </div>
         </div>
 
-        {/* Bottom ornament */}
         <motion.div
           className="mt-16 sm:mt-24 flex items-center gap-6 justify-center"
           initial={{ opacity: 0 }}
@@ -122,7 +119,7 @@ export default function About() {
         >
           <div className="h-px flex-1 bg-gradient-to-r from-transparent to-gold-400/20" />
           <span className="font-cinzel font-bold text-xs tracking-[0.5em] text-gold-500/40 uppercase hidden sm:block">
-            Icarus Debate Academy
+            ICARUS
           </span>
           <div className="h-px flex-1 bg-gradient-to-l from-transparent to-gold-400/20" />
         </motion.div>

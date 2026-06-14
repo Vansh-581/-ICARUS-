@@ -8,7 +8,6 @@ const NAV_ITEMS = [
   { label: 'About',        href: '#about'        },
   { label: 'Mission',      href: '#mission'       },
   { label: 'Programs',     href: '#programs'      },
-  { label: 'Achievements', href: '#achievements'  },
   { label: 'Team',         href: '#team'          },
   { label: 'Contact',      href: '#contact'       },
 ];
@@ -71,7 +70,7 @@ export default function Navigation() {
             ICARUS
           </span>
           <span className="font-mono text-[8px] sm:text-[9px] tracking-[0.4em] text-gold-500/70 uppercase -mt-0.5">
-            Debate Academy
+            Educational Organisation
           </span>
         </button>
 

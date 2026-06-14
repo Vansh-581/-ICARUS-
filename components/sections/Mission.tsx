@@ -14,12 +14,14 @@ export default function Mission() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo('.mission-card', {
-        y: 60, opacity: 0,
+        y: 40,
+        opacity: 0,
       }, {
         scrollTrigger: { trigger: '.mission-grid', start: 'top 75%' },
-        y: 0, opacity: 1,
-        stagger: 0.18,
-        duration: 0.9,
+        y: 0,
+        opacity: 1,
+        stagger: 0.14,
+        duration: 0.7,
         ease: 'power3.out',
       });
     }, sectionRef);
@@ -27,11 +29,11 @@ export default function Mission() {
   }, []);
 
   return (
-    <section id="mission" ref={sectionRef} className="relative py-32 overflow-hidden">
-      {/* Asymmetric background accent */}
+    <section id="mission" ref={sectionRef} className="relative py-28 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-gold-400/20 to-transparent" />
-        <div className="absolute -left-32 top-1/2 -translate-y-1/2 w-96 h-96 rounded-full"
+        <div
+          className="absolute -left-32 top-1/2 -translate-y-1/2 w-96 h-96 rounded-full"
           style={{ background: 'radial-gradient(ellipse, rgba(212,175,55,0.06) 0%, transparent 70%)' }}
         />
       </div>
@@ -40,15 +42,14 @@ export default function Mission() {
         <SectionTitle
           eyebrow="Purpose"
           title="Mission & Vision"
-          subtitle="To forge the next generation of intellectual leaders who argue not just to win — but to illuminate."
+          subtitle="Practical training for students who want to speak clearly, think critically, and grow through debate, MUN, and public speaking."
         />
 
-        <div className="mission-grid mt-20 grid lg:grid-cols-2 gap-8">
-          {/* Mission */}
-          <div className="mission-card glass-panel p-10 relative overflow-hidden group">
+        <div className="mission-grid mt-16 grid lg:grid-cols-2 gap-8">
+          <div className="mission-card glass-panel p-8 sm:p-10 relative overflow-hidden group">
             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold-400/50 to-transparent" />
             <div className="absolute -top-4 left-10">
-              <span className="font-mono text-[200px] text-gold-400/[0.03] font-bold leading-none select-none">
+              <span className="font-mono text-[160px] text-gold-400/[0.03] font-bold leading-none select-none">
                 M
               </span>
             </div>
@@ -57,24 +58,22 @@ export default function Mission() {
                 01 / Mission
               </span>
               <h3 className="font-cinzel text-2xl md:text-3xl text-white font-semibold mb-5 leading-snug">
-                Sharpen Every<br />
-                <span className="gold-text">Mind to Its Edge</span>
+                Build Confident<br />
+                <span className="gold-text">Student Speakers</span>
               </h3>
-              <p className="font-cormorant text-lg text-white/50 leading-relaxed">
-                Our mission is to cultivate mastery of reasoned discourse, critical thinking, 
-                and persuasive rhetoric — transforming students into thinkers who command 
-                any room they enter, any argument they face, any future they choose to build.
+              <p className="font-cormorant text-lg text-white/55 leading-relaxed">
+                Our mission is to give students structured, accessible training in debate,
+                Model United Nations, and public speaking through practice sessions,
+                feedback, mentoring, and student-friendly events.
               </p>
             </div>
-            {/* Hover border glow */}
             <div className="absolute inset-0 border border-gold-400/0 group-hover:border-gold-400/20 transition-all duration-500 pointer-events-none" />
           </div>
 
-          {/* Vision */}
-          <div className="mission-card glass-panel p-10 relative overflow-hidden group">
+          <div className="mission-card glass-panel p-8 sm:p-10 relative overflow-hidden group">
             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold-400/50 to-transparent" />
             <div className="absolute -top-4 left-10">
-              <span className="font-mono text-[200px] text-gold-400/[0.03] font-bold leading-none select-none">
+              <span className="font-mono text-[160px] text-gold-400/[0.03] font-bold leading-none select-none">
                 V
               </span>
             </div>
@@ -83,35 +82,31 @@ export default function Mission() {
                 02 / Vision
               </span>
               <h3 className="font-cinzel text-2xl md:text-3xl text-white font-semibold mb-5 leading-snug">
-                A World Led by<br />
-                <span className="gold-text">Thoughtful Voices</span>
+                Make Speaking<br />
+                <span className="gold-text">Training Accessible</span>
               </h3>
-              <p className="font-cormorant text-lg text-white/50 leading-relaxed">
-                We envision a world where the most powerful leaders are the most rigorous 
-                thinkers — where institutions, parliaments, and boardrooms are shaped by 
-                those trained to reason fearlessly, speak precisely, and lead with conviction.
+              <p className="font-cormorant text-lg text-white/55 leading-relaxed">
+                We aim to build a dependable student community where learners can
+                improve communication, leadership, research, and teamwork through
+                regular programs and well-managed events.
               </p>
             </div>
             <div className="absolute inset-0 border border-gold-400/0 group-hover:border-gold-400/20 transition-all duration-500 pointer-events-none" />
           </div>
         </div>
 
-        {/* Central quote */}
         <motion.blockquote
-          className="mt-24 text-center"
-          initial={{ opacity: 0, y: 40 }}
+          className="mt-20 text-center"
+          initial={{ opacity: 0, y: 32 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 0.8 }}
         >
-          <div className="font-mono text-xs tracking-[0.4em] text-gold-500/40 mb-6 uppercase">
-            ✦ &nbsp; The Icarus Principle &nbsp; ✦
+          <div className="font-mono text-xs tracking-[0.4em] text-gold-500/40 mb-5 uppercase">
+            The Icarus Approach
           </div>
-          <p className="font-cinzel text-xl md:text-3xl lg:text-4xl font-light text-white/70 leading-relaxed max-w-4xl mx-auto">
-            "The wings that carry you highest are forged from{' '}
-            <em className="gold-text not-italic font-semibold">discipline</em>,{' '}
-            <em className="gold-text not-italic font-semibold">knowledge</em>, and{' '}
-            <em className="gold-text not-italic font-semibold">courage</em>."
+          <p className="font-cinzel text-xl md:text-3xl font-light text-white/70 leading-relaxed max-w-3xl mx-auto">
+            Learn with structure. Grow through practice. Inspire with your voice.
           </p>
         </motion.blockquote>
       </div>

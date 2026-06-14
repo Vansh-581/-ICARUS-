@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SectionTitle from '@/components/ui/SectionTitle';
+import { SITE } from '@/lib/constants';
 
 interface FormState {
   name: string; email: string; phone: string; program: string; message: string;
@@ -11,6 +12,7 @@ interface Errors { name?: string; email?: string; phone?: string; message?: stri
 
 const EMPTY: FormState = { name: '', email: '', phone: '', program: '', message: '' };
 const LS_KEY = 'icarus-contact-draft';
+const FORM_ENDPOINT = '/api/contact';
 
 export default function Contact() {
   const [form,      setForm]      = useState<FormState>(EMPTY);
@@ -18,6 +20,7 @@ export default function Contact() {
   const [focused,   setFocused]   = useState<string | null>(null);
   const [loading,   setLoading]   = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Restore draft from localStorage on mount
   useEffect(() => {
@@ -52,10 +55,36 @@ export default function Contact() {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1200)); // simulate network
-    setLoading(false);
-    setSubmitted(true);
-    try { localStorage.removeItem(LS_KEY); } catch {}
+    setSubmitError(null);
+
+    try {
+      const response = await fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          program: form.program,
+          message: form.message,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data.success === 'false') {
+        throw new Error(data.message || 'Unable to send enquiry right now.');
+      }
+
+      setSubmitted(true);
+      try { localStorage.removeItem(LS_KEY); } catch {}
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : 'Unable to send enquiry right now.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const Field = ({
@@ -146,9 +175,10 @@ export default function Contact() {
 
             <div className="flex flex-col gap-7">
               {[
-                { label: 'Email',    value: 'hello@icarusdebate.academy',    icon: '✉' },
-                { label: 'Phone',    value: '+91 98765 43210',               icon: '◈' },
-                { label: 'Location', value: 'New Delhi · Mumbai · Bangalore', icon: '◉' },
+                { label: 'Email',    value: SITE.email,      icon: '✉', href: `mailto:${SITE.email}` },
+                { label: 'Phone',    value: SITE.phone,               icon: '◈', href: `tel:${SITE.phone.replace(/\s/g, '')}` },
+                { label: 'Location', value: SITE.locations.join(', '), icon: '◉' },
+                { label: 'Instagram', value: SITE.instagramHandle, icon: 'IG', href: SITE.instagram },
               ].map((item, i) => (
                 <motion.div key={item.label} className="flex items-start gap-5"
                   initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
@@ -158,7 +188,18 @@ export default function Contact() {
                   <div>
                     <p className="font-mono text-[14px] font-bold tracking-[0.4em] text-gold-500 uppercase mb-1"
                       >{item.label}</p>
-                    <p className="font-cormorant text-gold-650 text-lg">{item.value}</p>
+                    {item.href ? (
+                      <a
+                        href={item.href}
+                        target={item.href.startsWith('http') ? '_blank' : undefined}
+                        rel={item.href.startsWith('http') ? 'noreferrer' : undefined}
+                        className="font-cormorant text-gold-650 text-lg transition-opacity hover:opacity-75"
+                      >
+                        {item.value}
+                      </a>
+                    ) : (
+                      <p className="font-cormorant text-gold-650 text-lg">{item.value}</p>
+                    )}
                   </div>
                 </motion.div>
               ))}
@@ -220,11 +261,11 @@ export default function Contact() {
                         borderBottom: `1px solid ${focused === 'program' ? 'rgba(212,175,55,0.7)' : 'rgba(255,255,255,0.1)'}`,
                       }}
                     >
-                      <option value="" style={{ background: '#0c0c1a' }}>Select a Program</option>
-                      <option value="foundational" style={{ background: '#0c0c1a' }}>Foundational Oratory</option>
-                      <option value="competitive"  style={{ background: '#0c0c1a' }}>Competitive Debate</option>
-                      <option value="advanced"     style={{ background: '#0c0c1a' }}>Advanced Advocacy</option>
-                      <option value="leadership"   style={{ background: '#0c0c1a' }}>Leadership Lab</option>
+                      <option value="" style={{ background: 'var(--body-bg)', color: 'var(--body-color)' }}>Select a Program</option>
+                      <option value="training-sessions" style={{ background: 'var(--body-bg)', color: 'var(--body-color)' }}>Training Sessions</option>
+                      <option value="mun" style={{ background: 'var(--body-bg)', color: 'var(--body-color)' }}>Model United Nations</option>
+                      <option value="debate-concepts" style={{ background: 'var(--body-bg)', color: 'var(--body-color)' }}>Concepts of Debates</option>
+                      <option value="public-speaking" style={{ background: 'var(--body-bg)', color: 'var(--body-color)' }}>Public Speaking</option>
                     </select>
                     {/* Custom arrow */}
                     <span className="absolute right-0 bottom-3.5 pointer-events-none text-xs"
@@ -249,6 +290,20 @@ export default function Contact() {
                       }}
                     />
                   </Field>
+
+                  <AnimatePresence>
+                    {submitError && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="font-mono text-[10px] tracking-wider"
+                        style={{ color: 'rgba(239,68,68,0.9)' }}
+                      >
+                        {submitError}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
 
                   <motion.button
                     type="submit"
@@ -305,7 +360,7 @@ export default function Contact() {
                   <p className="font-cormorant text-lg max-w-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
                     We have received your enquiry and will be in touch within 24 hours.
                   </p>
-                  <button onClick={() => { setSubmitted(false); setForm(EMPTY); }}
+                  <button onClick={() => { setSubmitted(false); setSubmitError(null); setForm(EMPTY); }}
                     className="font-mono text-[10px] tracking-[0.3em] uppercase mt-2 transition-opacity hover:opacity-70"
                     style={{ color: 'rgba(212,175,55,0.5)' }}>
                     Submit Another

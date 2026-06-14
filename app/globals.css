@@ -752,11 +752,6 @@ section:not(#hero)::before {
     -webkit-backdrop-filter: blur(8px) !important;
   }
 
-  /* Achievements: make stat cards more compact on phones */
-  #achievements .glass-panel {
-    padding: 1rem !important;
-  }
-
   /* Team cards: tighten padding on phones */
   #team .rounded-2xl > div:last-child,
   #team .rounded-xl  > div:last-child {
@@ -778,14 +773,6 @@ section:not(#hero)::before {
     display: none !important;
   }
 }
-
-/* Achievements text: ensure long award titles always wrap on small screens */
-#achievements .font-cormorant {
-  overflow-wrap: break-word;
-  word-break: break-word;
-  hyphens: auto;
-}
-
 
 /* ═══════════════════════════════════════════════════════════════
    HERO — text visibility & light-theme mobile panel
@@ -919,4 +906,145 @@ section:not(#hero)::before {
 [data-theme="light"] [style*="rgba(255,255,255,0.3"],
 [data-theme="light"] [style*="rgba(255,255,255,0.2"] {
   color: rgba(30, 20, 8, 0.70) !important;
+}
+
+/* Programs price-list board */
+.program-toggle,
+.program-detail-card {
+  background: rgba(10, 8, 24, 0.58);
+  border: 1px solid rgba(212, 175, 55, 0.16);
+  border-radius: 18px;
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.28);
+}
+
+.program-toggle.is-active {
+  border-color: rgba(212, 175, 55, 0.55);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.34), 0 0 32px rgba(212, 175, 55, 0.08) inset;
+}
+
+.program-toggle-level,
+.program-toggle-title {
+  color: rgba(255, 248, 220, 0.92);
+}
+
+.program-toggle.is-active .program-toggle-level,
+.program-toggle.is-active .program-toggle-title {
+  color: #D4AF37;
+}
+
+.program-toggle-meta {
+  color: rgba(212, 175, 55, 0.58);
+}
+
+.program-detail-chip {
+  color: rgba(255, 255, 255, 0.62);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(212, 175, 55, 0.12);
+  border-radius: 999px;
+}
+
+.program-price-board {
+  border-radius: 28px;
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  background:
+    linear-gradient(rgba(70, 70, 70, 0.72), rgba(70, 70, 70, 0.72)),
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.18), transparent 36%),
+    #3f3f3f;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+}
+
+.program-price-ghost {
+  position: absolute;
+  inset: 8% 0 auto;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: clamp(5rem, 18vw, 14rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.24);
+  transform: translateX(0.03em);
+}
+
+.price-tier-card {
+  min-height: 380px;
+  background: linear-gradient(180deg, rgba(18, 18, 18, 0.62), rgba(8, 8, 8, 0.84));
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.36);
+}
+
+.price-tier-card:first-child {
+  border-radius: 24px 0 0 24px;
+}
+
+.price-tier-card:last-child {
+  border-radius: 0 24px 24px 0;
+}
+
+.price-tier-card.is-featured {
+  z-index: 2;
+  margin-block: -24px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(86, 86, 86, 0.70), rgba(8, 8, 8, 0.88));
+}
+
+@media (max-width: 1023px) {
+  .price-tier-card,
+  .price-tier-card:first-child,
+  .price-tier-card:last-child,
+  .price-tier-card.is-featured {
+    margin-block: 0;
+    border-radius: 24px;
+  }
+}
+
+[data-theme="light"] .program-toggle,
+[data-theme="light"] .program-detail-card {
+  background: rgba(255, 252, 246, 0.92);
+  border-color: rgba(127, 87, 12, 0.34);
+  box-shadow: 0 18px 55px rgba(68, 48, 18, 0.13);
+}
+
+[data-theme="light"] .program-toggle.is-active {
+  background: rgba(255, 247, 224, 0.96);
+  border-color: rgba(127, 87, 12, 0.68);
+  box-shadow: 0 18px 55px rgba(68, 48, 18, 0.17), 0 0 0 1px rgba(212, 175, 55, 0.14) inset;
+}
+
+[data-theme="light"] .program-toggle-level,
+[data-theme="light"] .program-toggle-title,
+[data-theme="light"] #team button {
+  color: rgba(38, 25, 6, 0.88) !important;
+}
+
+[data-theme="light"] .program-toggle.is-active .program-toggle-level,
+[data-theme="light"] .program-toggle.is-active .program-toggle-title {
+  color: rgba(127, 87, 12, 1) !important;
+}
+
+[data-theme="light"] .program-toggle-meta,
+[data-theme="light"] #team button span {
+  color: rgba(102, 70, 10, 0.78) !important;
+}
+
+[data-theme="light"] .program-detail-card h3,
+[data-theme="light"] .program-detail-card p {
+  color: rgba(38, 25, 6, 0.82) !important;
+}
+
+[data-theme="light"] .program-detail-chip {
+  color: rgba(38, 25, 6, 0.75);
+  background: rgba(255, 255, 255, 0.56);
+  border-color: rgba(127, 87, 12, 0.22);
+}
+
+[data-theme="light"] .program-price-board {
+  background:
+    linear-gradient(rgba(100, 100, 100, 0.62), rgba(100, 100, 100, 0.62)),
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.28), transparent 36%),
+    #8f8f8f;
+  border-color: rgba(127, 87, 12, 0.52);
+}
+
+[data-theme="light"] .price-tier-card {
+  background: linear-gradient(180deg, rgba(28, 28, 28, 0.68), rgba(8, 8, 8, 0.88));
 }
