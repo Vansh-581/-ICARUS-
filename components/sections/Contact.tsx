@@ -87,7 +87,7 @@ export default function Contact() {
     }
   };
 
-  const Field = ({
+  const renderField = ({
     name, label, type = 'text', required = false, children,
   }: {
     name: keyof FormState; label: string; type?: string; required?: boolean;
@@ -241,10 +241,10 @@ export default function Contact() {
                   </h3>
 
                   <div className="grid sm:grid-cols-2 gap-7">
-                    <Field name="name"  label="Full Name"     required />
-                    <Field name="phone" label="Phone Number" type="tel" />
+                    {renderField({ name: 'name', label: 'Full Name', required: true })}
+                    {renderField({ name: 'phone', label: 'Phone Number', type: 'tel' })}
                   </div>
-                  <Field name="email" label="Email Address" type="email" required />
+                  {renderField({ name: 'email', label: 'Email Address', type: 'email', required: true })}
 
                   {/* Program select */}
                   <div className="relative pt-5">
@@ -276,7 +276,7 @@ export default function Contact() {
                       transition={{ duration: 0.25 }} />
                   </div>
 
-                  <Field name="message" label="Your Message" required>
+                  {renderField({ name: 'message', label: 'Your Message', required: true, children: (
                     <textarea
                       value={form.message}
                       onChange={e => handleChange('message', e.target.value)}
@@ -289,7 +289,7 @@ export default function Contact() {
                         borderBottom: `1px solid ${errors.message ? 'rgba(239,68,68,0.6)' : focused === 'message' ? 'rgba(212,175,55,0.7)' : 'rgba(255,255,255,0.1)'}`,
                       }}
                     />
-                  </Field>
+                  ) })}
 
                   <AnimatePresence>
                     {submitError && (
