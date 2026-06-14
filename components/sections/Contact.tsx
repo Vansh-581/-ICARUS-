@@ -13,7 +13,6 @@ interface Errors { name?: string; email?: string; phone?: string; message?: stri
 const EMPTY: FormState = { name: '', email: '', phone: '', program: '', message: '' };
 const LS_KEY = 'icarus-contact-draft';
 const FORM_ENDPOINT = '/api/contact';
-
 export default function Contact() {
   const [form,      setForm]      = useState<FormState>(EMPTY);
   const [errors,    setErrors]    = useState<Errors>({});
@@ -74,14 +73,14 @@ export default function Contact() {
       });
 
       const data = await response.json().catch(() => ({}));
-      if (!response.ok || data.success === 'false') {
+      if (!response.ok) {
         throw new Error(data.message || 'Unable to send enquiry right now.');
       }
 
       setSubmitted(true);
       try { localStorage.removeItem(LS_KEY); } catch {}
     } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : 'Unable to send enquiry right now.');
+      setSubmitError(error instanceof Error ? error.message : `Unable to send enquiry right now. Please email ${SITE.email}.`);
     } finally {
       setLoading(false);
     }
@@ -355,7 +354,7 @@ export default function Contact() {
                     >✦</motion.span>
                   </motion.div>
                   <h3 className="font-cinzel text-2xl font-semibold" style={{ color: 'rgba(255,248,220,0.95)' }}>
-                    Your Ascent Begins
+                    Enquiry Sent
                   </h3>
                   <p className="font-cormorant text-lg max-w-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
                     We have received your enquiry and will be in touch within 24 hours.

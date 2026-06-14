@@ -66,9 +66,9 @@ export default function Hero() {
           className="absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none px-4"
           style={{ opacity: textOpacity, y: textY }}
         >
-          <div className="hero-text-panel flex flex-col items-center w-full max-w-lg sm:max-w-none">
+          <div className="hero-text-panel flex flex-col items-center w-full max-w-lg sm:max-w-none text-xl">
             <motion.p
-              className="font-mono text-[9px] sm:text-xs tracking-[0.45em] sm:tracking-[0.7em] text-black-500/70 uppercase mb-4 sm:mb-6 text-center"
+              className="font-mono text-xs sm:text-sm tracking-[0.45em] sm:tracking-[0.7em] text-black-500/70 uppercase mb-4 sm:mb-6 text-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 2.0, duration: 0.9 }}
@@ -85,13 +85,10 @@ export default function Hero() {
               <span className="block text-6xl sm:text-7xl md:text-[8rem] lg:text-[10rem] gold-shimmer-text font-black tracking-[-0.02em] hero-title-shadow">
                 ICARUS
               </span>
-              <span className="block text-[0.6rem] sm:text-sm md:text-lg tracking-[0.4em] sm:tracking-[0.6em] gold-text font-light mt-1.5 sm:mt-2">
-                LEARN. GROW. INSPIRE.
-              </span>
             </motion.h1>
 
             <motion.p
-              className="font-cormorant text-base sm:text-lg md:text-2xl italic tracking-wide mt-4 sm:mt-6 px-2 text-center max-w-xs sm:max-w-lg hero-tagline"
+              className="font-cormorant text-xl sm:text-2xl md:text-3xl italic tracking-wide mt-4 sm:mt-6 px-2 text-center max-w-xs sm:max-w-lg hero-tagline"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 2.6, duration: 0.9 }}

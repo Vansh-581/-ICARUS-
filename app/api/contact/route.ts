@@ -11,6 +11,15 @@ interface ContactPayload {
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 export async function POST(request: Request) {
   let payload: ContactPayload;
 
@@ -34,34 +43,58 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Enter a valid email address.' }, { status: 400 });
   }
 
-  const endpoint = `https://formsubmit.co/ajax/${SITE.email}`;
-  const origin = request.headers.get('origin') || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3005';
-  const response = await fetch(endpoint, {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.CONTACT_FROM_EMAIL || 'ICARUS <onboarding@resend.dev>';
+  const to = process.env.CONTACT_TO_EMAIL || SITE.email;
+
+  if (!apiKey) {
+    return NextResponse.json(
+      { message: 'Email service is not configured yet. Add RESEND_API_KEY in .env.local.' },
+      { status: 503 },
+    );
+  }
+
+  const html = `
+    <h2>New ICARUS enquiry</h2>
+    <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+    <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+    <p><strong>Phone:</strong> ${escapeHtml(phone || 'Not provided')}</p>
+    <p><strong>Program:</strong> ${escapeHtml(program || 'Not selected')}</p>
+    <p><strong>Message:</strong></p>
+    <p>${escapeHtml(message).replace(/\n/g, '<br />')}</p>
+  `;
+
+  const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
+      Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Origin: origin,
-      Referer: `${origin}/`,
     },
     body: JSON.stringify({
-      name,
-      email,
-      phone: phone || 'Not provided',
-      program: program || 'Not selected',
-      message,
-      _replyto: email,
-      _subject: `New ICARUS enquiry from ${name}`,
-      _template: 'table',
-      _captcha: 'false',
+      from,
+      to: [to],
+      reply_to: email,
+      subject: `New ICARUS enquiry from ${name}`,
+      html,
+      text: [
+        'New ICARUS enquiry',
+        '',
+        `Name: ${name}`,
+        `Email: ${email}`,
+        `Phone: ${phone || 'Not provided'}`,
+        `Program: ${program || 'Not selected'}`,
+        '',
+        'Message:',
+        message,
+      ].join('\n'),
     }),
   });
 
   const data = await response.json().catch(() => ({}));
 
-  if (!response.ok || data.success === 'false') {
+  if (!response.ok) {
     return NextResponse.json(
-      { message: data.message || 'Unable to send enquiry right now.' },
+      { message: data.message || 'Email service rejected the enquiry.' },
       { status: 502 },
     );
   }
