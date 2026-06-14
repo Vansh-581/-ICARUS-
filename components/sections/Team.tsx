@@ -93,6 +93,16 @@ const CORE_TEAM: Member[] = [
     accentTo: 'rgba(212,175,55,0.03)',
     photoSrc: '/team/jaipreet.png',
   },
+  {
+    name: 'MAHIR GAUTAM',
+    role: 'Regional Operator - Kathua',
+    initials: 'MG',
+    bio: 'Supports ICARUS regional coordination, outreach, and operations in Kathua.',
+    credentials: ['Regional Operator - Kathua', 'Regional Coordination', 'Outreach'],
+    accentFrom: 'rgba(212,175,55,0.18)',
+    accentTo: 'rgba(139,105,20,0.04)',
+    photoSrc: '/team/mahir-gautam.jpg',
+  },
 ];
 
 const MENTORS: Member[] = [

@@ -156,7 +156,11 @@ export default function Navigation() {
               ))}
               <button
                 onClick={() => handleAnchor('#contact')}
-                className="mt-4 w-full font-cinzel text-xs tracking-[0.3em] px-6 py-3 border border-gold-400/50 text-gold-300 uppercase hover:bg-gold-400/10 transition-all duration-300"
+                className="mt-4 w-full font-cinzel text-xs font-bold tracking-[0.3em] px-6 py-3 border border-gold-500 uppercase transition-all duration-300 shadow-[0_0_24px_rgba(212,175,55,0.18)]"
+                style={{
+                  background: 'linear-gradient(135deg, #FFD700, #D4AF37)',
+                  color: '#111018',
+                }}
               >
                 Enrol Now
               </button>
