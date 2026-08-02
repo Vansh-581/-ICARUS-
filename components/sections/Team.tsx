@@ -20,14 +20,25 @@ interface Member {
 
 const FOUNDERS: Member[] = [
   {
+    name: 'ADITYA SINGH THAKUR',
+    role: 'Founder & CEO',
+    initials: 'AST',
+    bio: 'Founder & CEO of ICARUS, driving strategic vision, organizational leadership, and student empowerment.',
+    credentials: ['Founder & CEO', 'Strategic Vision', 'Organizational Leadership'],
+    accentFrom: 'rgba(212,175,55,0.24)',
+    accentTo: 'rgba(139,105,20,0.06)',
+    badge: 'Founder & CEO',
+    photoSrc: '/team/aditya-singh-thakur.jpg',
+  },
+  {
     name: 'RITVIK SINGH',
-    role: 'Founder',
+    role: 'Co-Founder',
     initials: 'RS',
-    bio: 'Founder of ICARUS, national-level MUNer, and State Debate Champion.',
-    credentials: ['National-Level MUNer', 'State Debate Champion', 'Founder'],
+    bio: 'Co-Founder of ICARUS, national-level MUNer, and State Debate Champion.',
+    credentials: ['National-Level MUNer', 'State Debate Champion', 'Co-Founder'],
     accentFrom: 'rgba(212,175,55,0.22)',
     accentTo: 'rgba(139,105,20,0.05)',
-    badge: 'Founder',
+    badge: 'Co-Founder',
     photoSrc: '/team/ritvik.png',
   },
 ];
@@ -192,7 +203,7 @@ const INTERNS: Member[] = [
 ];
 
 const TABS = [
-  { id: 'founders' as TabId, label: 'Founder', count: FOUNDERS.length },
+  { id: 'founders' as TabId, label: 'Founder & CEO', count: FOUNDERS.length },
   { id: 'team' as TabId, label: 'Core Team', count: CORE_TEAM.length },
   { id: 'mentors' as TabId, label: 'Mentors', count: MENTORS.length },
   { id: 'interns' as TabId, label: 'Interns', count: INTERNS.length },
@@ -486,7 +497,7 @@ export default function Team() {
         <div className="mt-10 sm:mt-14 min-h-[520px]">
           <AnimatePresence mode="wait">
             {active === 'founders' && (
-              <motion.div key="founders" variants={grid} initial="hidden" animate="show" exit="exit" className="grid grid-cols-1 gap-6 max-w-xl mx-auto">
+              <motion.div key="founders" variants={grid} initial="hidden" animate="show" exit="exit" className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
                 {FOUNDERS.map(m => <FounderCard key={m.name} m={m} />)}
               </motion.div>
             )}
