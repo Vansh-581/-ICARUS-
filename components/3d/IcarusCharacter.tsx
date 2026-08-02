@@ -40,13 +40,13 @@ const VERT_INJECT = `
   transformed.y += flap * lever * sign(transformed.x);
   transformed.z -= flap * lever * 0.28;
 
-  // ── Groin region anatomical smoothing — tuck & flatten bulge ──
-  float gX = transformed.x / 0.14;
-  float gY = (transformed.y + 0.22) / 0.16;
+  // ── Groin & Pelvic region anatomical smoothing — tuck & flatten full lower torso ──
+  float gX = transformed.x / 0.18;
+  float gY = (transformed.y + 0.22) / 0.22;
   float gDistSq = gX * gX + gY * gY;
-  if (gDistSq < 1.0 && transformed.z > -0.05) {
+  if (gDistSq < 1.0 && transformed.z > -0.06) {
     float gFactor = cos(clamp(sqrt(gDistSq), 0.0, 1.0) * 1.5707963);
-    transformed.z = mix(transformed.z, min(transformed.z, -0.025), gFactor * 0.98);
+    transformed.z = mix(transformed.z, min(transformed.z, -0.03), gFactor * 0.98);
   }
 `;
 
@@ -98,14 +98,14 @@ export default function IcarusCharacter({
           const y = pos.getY(i);
           const z = pos.getZ(i);
 
-          // Target pelvic / groin region protrusion
-          if (y >= -0.40 && y <= -0.04 && Math.abs(x) <= 0.16 && z > -0.04) {
-            const dx = x / 0.13;
-            const dy = (y + 0.22) / 0.15;
+          // Target full pelvic / groin / upper thigh region
+          if (y >= -0.45 && y <= 0.02 && Math.abs(x) <= 0.20 && z > -0.05) {
+            const dx = x / 0.16;
+            const dy = (y + 0.22) / 0.20;
             const distSq = dx * dx + dy * dy;
             if (distSq < 1.0) {
               const factor = Math.cos(Math.sqrt(distSq) * Math.PI * 0.5);
-              const targetZ = Math.min(z, -0.025);
+              const targetZ = Math.min(z, -0.03);
               pos.setZ(i, THREE.MathUtils.lerp(z, targetZ, factor * 0.98));
               modified = true;
             }
@@ -183,18 +183,47 @@ export default function IcarusCharacter({
   return (
     <group ref={groupRef} position={[0, isMobile ? -0.1 : -0.55, 0]}>
       <primitive object={clonedScene} scale={[2.8, 2.8, 2.8]} />
-      {/* Heroic Greek modesty waist wrap / sash */}
-      <mesh position={[0, -0.21 * 2.8, 0.01 * 2.8]} rotation={[0.08, 0, 0]}>
-        <cylinderGeometry args={[0.26, 0.30, 0.32, 32, 1, true]} />
-        <meshStandardMaterial
-          color={isLow ? '#d4a520' : '#f0c040'}
-          metalness={0.95}
-          roughness={0.22}
-          emissive="#6b4a00"
-          emissiveIntensity={isLow ? 0.15 : 0.28}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
+
+      {/* ── Traditional Draped Tribal / Adivasi Loincloth Group ── */}
+      <group position={[0, -0.23 * 2.8, 0.01 * 2.8]}>
+        {/* Main Draped Wrap around Hips, Buttocks & Upper Thighs */}
+        <mesh rotation={[0.06, 0, 0]}>
+          <cylinderGeometry args={[0.30, 0.38, 0.95, 48, 16, true]} />
+          <meshStandardMaterial
+            color={isLow ? '#d4a520' : '#e6b800'}
+            metalness={0.75}
+            roughness={0.35}
+            emissive="#503800"
+            emissiveIntensity={isLow ? 0.18 : 0.28}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+
+        {/* Front Draped Apron / Sash Flap (covers front pelvic/groin area completely) */}
+        <mesh position={[0, -0.15, 0.14]} rotation={[0.16, 0, 0]}>
+          <cylinderGeometry args={[0.22, 0.28, 0.78, 32, 8, true, -Math.PI * 0.35, Math.PI * 0.70]} />
+          <meshStandardMaterial
+            color={isLow ? '#c49515' : '#f0c430'}
+            metalness={0.82}
+            roughness={0.28}
+            emissive="#5c4200"
+            emissiveIntensity={0.30}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+
+        {/* Golden Tribal Waistband / Belt Ring */}
+        <mesh position={[0, 0.44, -0.01]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.30, 0.038, 16, 48]} />
+          <meshStandardMaterial
+            color="#ffd700"
+            metalness={0.95}
+            roughness={0.15}
+            emissive="#7a5500"
+            emissiveIntensity={0.35}
+          />
+        </mesh>
+      </group>
     </group>
   );
 }
