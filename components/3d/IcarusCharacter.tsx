@@ -103,13 +103,13 @@ export default function IcarusCharacter({
           const z = pos.getZ(i);
 
           // Target full pelvic / groin / upper thigh region
-          if (y >= -0.45 && y <= 0.02 && Math.abs(x) <= 0.20 && z > -0.05) {
-            const dx = x / 0.16;
-            const dy = (y + 0.22) / 0.20;
+          if (y >= -0.48 && y <= 0.05 && Math.abs(x) <= 0.22 && z > -0.06) {
+            const dx = x / 0.18;
+            const dy = (y + 0.22) / 0.24;
             const distSq = dx * dx + dy * dy;
             if (distSq < 1.0) {
               const factor = Math.cos(Math.sqrt(distSq) * Math.PI * 0.5);
-              const targetZ = Math.min(z, -0.03);
+              const targetZ = Math.min(z, -0.035);
               pos.setZ(i, THREE.MathUtils.lerp(z, targetZ, factor * 0.98));
               modified = true;
             }
@@ -187,46 +187,6 @@ export default function IcarusCharacter({
   return (
     <group ref={groupRef} position={[0, isMobile ? -0.1 : -0.55, 0]}>
       <primitive object={clonedScene} scale={[2.8, 2.8, 2.8]} />
-
-      {/* ── Sleek 360° Fitted Golden Boxer Shorts / Modesty Wrap ── */}
-      <group position={[0, -0.17 * 2.8, 0.005 * 2.8]}>
-        {/* Full 360° Fitted Boxer Short Wrap */}
-        <mesh rotation={[0.05, 0, 0]}>
-          <cylinderGeometry args={[0.31, 0.35, 0.54, 64, 16, true]} />
-          <meshStandardMaterial
-            color={isLow ? '#d4a520' : '#f0c040'}
-            metalness={0.92}
-            roughness={0.24}
-            emissive="#6b4a00"
-            emissiveIntensity={isLow ? 0.16 : 0.28}
-            side={THREE.DoubleSide}
-          />
-        </mesh>
-
-        {/* Top Metallic Elastic Waistband Ring */}
-        <mesh position={[0, 0.26, -0.005]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[0.308, 0.028, 16, 64]} />
-          <meshStandardMaterial
-            color="#ffd700"
-            metalness={0.98}
-            roughness={0.15}
-            emissive="#7a5500"
-            emissiveIntensity={0.35}
-          />
-        </mesh>
-
-        {/* Bottom Thigh Hem Trim */}
-        <mesh position={[0, -0.26, 0.005]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[0.348, 0.022, 16, 64]} />
-          <meshStandardMaterial
-            color="#ffd700"
-            metalness={0.98}
-            roughness={0.15}
-            emissive="#7a5500"
-            emissiveIntensity={0.35}
-          />
-        </mesh>
-      </group>
     </group>
   );
 }
