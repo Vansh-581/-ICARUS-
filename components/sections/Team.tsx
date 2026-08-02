@@ -19,28 +19,29 @@ interface Member {
 }
 
 const FOUNDERS: Member[] = [
-  {
-    name: 'ADITYA SINGH THAKUR',
-    role: 'Founder & CEO',
-    initials: 'AST',
-    bio: 'Founder & CEO of ICARUS, driving strategic vision, organizational leadership, and student empowerment.',
-    credentials: ['Founder & CEO', 'Strategic Vision', 'Organizational Leadership'],
-    accentFrom: 'rgba(212,175,55,0.24)',
-    accentTo: 'rgba(139,105,20,0.06)',
-    badge: 'Founder & CEO',
-    photoSrc: '/team/aditya-singh-thakur.jpg',
-  },
-  {
+    {
     name: 'RITVIK SINGH',
-    role: 'Co-Founder',
+    role: 'Founder',
     initials: 'RS',
-    bio: 'Co-Founder of ICARUS, national-level MUNer, and State Debate Champion.',
-    credentials: ['National-Level MUNer', 'State Debate Champion', 'Co-Founder'],
+    bio: 'Founder of ICARUS, national-level MUNer, and State Debate Champion.',
+    credentials: ['National-Level MUNer', 'State Debate Champion', 'Founder'],
     accentFrom: 'rgba(212,175,55,0.22)',
     accentTo: 'rgba(139,105,20,0.05)',
-    badge: 'Co-Founder',
+    badge: 'Founder',
     photoSrc: '/team/ritvik.png',
   },
+  {
+    name: 'ADITYA SINGH THAKUR',
+    role: 'Co-Founder',
+    initials: 'AST',
+    bio: 'Co-Founder of ICARUS, driving strategic vision and student empowerment.',
+    credentials: ['Co-Founder', 'Strategic Vision'],
+    accentFrom: 'rgba(212,175,55,0.24)',
+    accentTo: 'rgba(139,105,20,0.06)',
+    badge: 'Co-Founder',
+    photoSrc: '/team/aditya-singh-thakur.jpg',
+  },
+
 ];
 
 const CORE_TEAM: Member[] = [
@@ -147,6 +148,26 @@ const MENTORS: Member[] = [
     accentTo: 'rgba(100,116,139,0.05)',
     photoSrc: '/team/mominah.png',
   },
+  {
+    name: 'AWANA DUTTA',
+    role: 'Mentor',
+    initials: 'AD',
+    bio: 'Mentor supporting ICARUS students with guidance, strategic perspective, and leadership growth.',
+    credentials: ['Mentor', 'Guidance', 'Leadership Growth'],
+    accentFrom: 'rgba(148,163,184,0.22)',
+    accentTo: 'rgba(100,116,139,0.05)',
+    photoSrc: '/team/awana-dutta.jpg',
+  },
+  {
+    name: 'KASHISH ZAKIR',
+    role: 'Mentor',
+    initials: 'KZ',
+    bio: 'Mentor supporting ICARUS programs through public speaking guidance, feedback, and student development.',
+    credentials: ['Mentor', 'Public Speaking', 'Student Development'],
+    accentFrom: 'rgba(148,163,184,0.20)',
+    accentTo: 'rgba(100,116,139,0.04)',
+    photoSrc: '/team/kashish-zakir.jpg',
+  },
 ];
 
 const INTERNS: Member[] = [
@@ -190,20 +211,10 @@ const INTERNS: Member[] = [
     accentTo: 'rgba(212,175,55,0.03)',
     photoSrc: '/team/mazhar-mahmod.jpg',
   },
-  {
-    name: 'VANNIYA',
-    role: 'Intern',
-    initials: 'V',
-    bio: 'Supports ICARUS with communication, coordination, and event tasks.',
-    credentials: ['Intern', 'Communication', 'Coordination'],
-    accentFrom: 'rgba(212,175,55,0.19)',
-    accentTo: 'rgba(139,105,20,0.04)',
-    photoSrc: '/team/vaniya.jpg',
-  },
 ];
 
 const TABS = [
-  { id: 'founders' as TabId, label: 'Founder & CEO', count: FOUNDERS.length },
+  { id: 'founders' as TabId, label: 'Founder & Co-Founder', count: FOUNDERS.length },
   { id: 'team' as TabId, label: 'Core Team', count: CORE_TEAM.length },
   { id: 'mentors' as TabId, label: 'Mentors', count: MENTORS.length },
   { id: 'interns' as TabId, label: 'Interns', count: INTERNS.length },
@@ -509,7 +520,7 @@ export default function Team() {
             )}
 
             {active === 'mentors' && (
-              <motion.div key="mentors" variants={grid} initial="hidden" animate="show" exit="exit" className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              <motion.div key="mentors" variants={grid} initial="hidden" animate="show" exit="exit" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
                 {MENTORS.map(m => <MentorCard key={m.name} m={m} />)}
               </motion.div>
             )}
