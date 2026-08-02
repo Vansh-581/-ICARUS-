@@ -32,11 +32,15 @@ const VERT_INJECT = `
   transformed.y += (r1 * 0.007 + r2 * 0.004) * mask;
   transformed.z += cos(uTime * 1.7 + transformed.x * 5.0) * 0.005 * mask;
 
-  // Wing flap — accelerates with scroll progress
+  // Wing flap — accelerates with scroll progress, isolated strictly to outer wings
   float freq  = 1.25 + uScroll * 0.5;
   float amp   = (0.05 + uScroll * 0.06) * wingY;
   float flap  = sin(uTime * freq * 6.2831) * amp;
-  float lever = smoothstep(0.46, 1.0, normY) * (normY - 0.46) * 2.2;
+
+  // Mask out central head/spine (normX < 0.20 and normY > 0.75) to keep head completely steady
+  float headIsolate = smoothstep(0.12, 0.45, normX);
+  float wingLever = smoothstep(0.40, 0.78, normY) * (1.0 - smoothstep(0.78, 0.95, normY)) * (normY - 0.40) * 2.5;
+  float lever = wingLever * headIsolate;
   transformed.y += flap * lever * sign(transformed.x);
   transformed.z -= flap * lever * 0.28;
 
@@ -165,9 +169,9 @@ export default function IcarusCharacter({
 
     if (!groupRef.current) return;
 
-    // Rise with scroll, gentle sinusoidal hover
+    // Rise with scroll, ultra-gentle steady hover
     groupRef.current.position.y =
-      (isMobile ? -0.1 : -0.55) + p * 8.2 + Math.sin(t * 0.58) * 0.05;
+      (isMobile ? -0.1 : -0.55) + p * 8.2 + Math.sin(t * 0.35) * 0.012;
 
     // Subtle yaw (side-to-side rotation)
     groupRef.current.rotation.y = p * 0.28 + Math.sin(t * 0.16) * 0.09;
