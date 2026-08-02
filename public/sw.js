@@ -6,7 +6,7 @@
  *  - Everything else → Network-first (HTML, JS, API calls stay fresh)
  */
 
-const CACHE_NAME = 'icarus-assets-v1';
+const CACHE_NAME = 'icarus-assets-v2';
 
 const PRECACHE = [
   '/Icarus_model_3d.glb',

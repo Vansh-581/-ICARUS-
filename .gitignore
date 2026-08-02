@@ -31,3 +31,5 @@ Thumbs.db
 
 # local archives and backups
 *.zip
+scratch/
+
