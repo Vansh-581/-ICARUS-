@@ -184,40 +184,39 @@ export default function IcarusCharacter({
     <group ref={groupRef} position={[0, isMobile ? -0.1 : -0.55, 0]}>
       <primitive object={clonedScene} scale={[2.8, 2.8, 2.8]} />
 
-      {/* ── Traditional Draped Tribal / Adivasi Loincloth Group ── */}
-      <group position={[0, -0.23 * 2.8, 0.01 * 2.8]}>
-        {/* Main Draped Wrap around Hips, Buttocks & Upper Thighs */}
-        <mesh rotation={[0.06, 0, 0]}>
-          <cylinderGeometry args={[0.30, 0.38, 0.95, 48, 16, true]} />
+      {/* ── Sleek 360° Fitted Golden Boxer Shorts / Modesty Wrap ── */}
+      <group position={[0, -0.17 * 2.8, 0.005 * 2.8]}>
+        {/* Full 360° Fitted Boxer Short Wrap */}
+        <mesh rotation={[0.05, 0, 0]}>
+          <cylinderGeometry args={[0.31, 0.35, 0.54, 64, 16, true]} />
           <meshStandardMaterial
-            color={isLow ? '#d4a520' : '#e6b800'}
-            metalness={0.75}
-            roughness={0.35}
-            emissive="#503800"
-            emissiveIntensity={isLow ? 0.18 : 0.28}
+            color={isLow ? '#d4a520' : '#f0c040'}
+            metalness={0.92}
+            roughness={0.24}
+            emissive="#6b4a00"
+            emissiveIntensity={isLow ? 0.16 : 0.28}
             side={THREE.DoubleSide}
           />
         </mesh>
 
-        {/* Front Draped Apron / Sash Flap (covers front pelvic/groin area completely) */}
-        <mesh position={[0, -0.15, 0.14]} rotation={[0.16, 0, 0]}>
-          <cylinderGeometry args={[0.22, 0.28, 0.78, 32, 8, true, -Math.PI * 0.35, Math.PI * 0.70]} />
-          <meshStandardMaterial
-            color={isLow ? '#c49515' : '#f0c430'}
-            metalness={0.82}
-            roughness={0.28}
-            emissive="#5c4200"
-            emissiveIntensity={0.30}
-            side={THREE.DoubleSide}
-          />
-        </mesh>
-
-        {/* Golden Tribal Waistband / Belt Ring */}
-        <mesh position={[0, 0.44, -0.01]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[0.30, 0.038, 16, 48]} />
+        {/* Top Metallic Elastic Waistband Ring */}
+        <mesh position={[0, 0.26, -0.005]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.308, 0.028, 16, 64]} />
           <meshStandardMaterial
             color="#ffd700"
-            metalness={0.95}
+            metalness={0.98}
+            roughness={0.15}
+            emissive="#7a5500"
+            emissiveIntensity={0.35}
+          />
+        </mesh>
+
+        {/* Bottom Thigh Hem Trim */}
+        <mesh position={[0, -0.26, 0.005]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.348, 0.022, 16, 64]} />
+          <meshStandardMaterial
+            color="#ffd700"
+            metalness={0.98}
             roughness={0.15}
             emissive="#7a5500"
             emissiveIntensity={0.35}
